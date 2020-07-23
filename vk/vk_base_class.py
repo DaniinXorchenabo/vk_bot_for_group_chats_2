@@ -12,14 +12,23 @@ class VkBase(BaseClass):
 
     vk_session = None
 
-    func_for_com = dict()  # {str: processing_func, ...}
+    func_for_com = dict()  # {str: processing_func, ...} содержит все команды и функции их обработки
+
+    # содержит функцию определения команды, название команды и функцию ее обраьотки
     rec_com = dict()  # {recognize_func: (name_com: str, processing_func), ...}
-    all_commands = ['/new_msg']
+    all_commands = ['/new_msg']  # список всех команд
+
+    # список всех команд, не требующих доступа к БД.
     DBless_com = [[], []]  # [[команды без аргументов], [команды с аргументами]]
+
+    # позволяет найти имя главной команды по названию второстепенной (пример: find_main_com['помоги'] = "/help")
     find_main_com = dict()  # {второстепенная команда: основное название команды}
+
     # [[[команды, которые не принимают аргументов], [команды с аргументами]], ...]
     # списиок списков. первый индекс - приоритетность запроса
-    prior_com = []  # type: list[list[(str), (str)]]
+    prior_com_proc = []  # type: list[list[(str), (str)]]  # команды, отправляемые сначала на обработку
+    prior_com_db = []  # type: list[list[(str), (str)]]  # Команды, идущие сразу в БД
+
     admin_com = []  # команды, доступные только из админки
     developer_com = []  # команды, доступные только для разработчика
     help_command = ''
@@ -54,8 +63,12 @@ class VkBase(BaseClass):
         :param it_is_part: является ли данная команда только частью сообщения (1 - если является)
         :param rec_f: функции, позволяющие определить, подходит ли сообщение под кодовое слово или нет
                         (их должно быть не много)
-        :param db_acc: False - если для команды не требуется доступа к БД.
-                    Число с 0 - уровень приоритетности запроса к БД
+        :param db_acc:  False - если для команды не требуется доступа к БД.
+                        (False, number: int)    первое False - быстрые вычисления, знпчит передаем запрос сразу в БД
+                                                number - число с 0 - приоритетность запроса в БД
+                        (num1: int, True)   num1 - запрос требует долгих предварительных вычислений, передаем запрос
+                                                    в класс обработки сообщений. num1 - приоритетность запроса
+                                            True - дальше передаем запрос в БД
         """
         def decorator(func):
             def wrapped(*args_dec, **kwargs_dec):
@@ -76,7 +89,13 @@ class VkBase(BaseClass):
             cls.find_main_com.update({com_name: i for i in [com_name] + duple})
             cls.rec_com.update({i: (com_name, wrapped) for i in rec_f})
             if db_acc:
-                cls.priority_list_created(db_acc, [com_name] + duple, it_is_part)
+                work_st, db_st = db_acc
+                if not work_st:  # если вычисления не тяжелые, то отправляем сразу в БД
+                    cls.prior_com_db = cls.priority_list_created(db_st, [com_name] + duple,
+                                                                 it_is_part, cls.prior_com_db)
+                else:
+                    cls.prior_com_proc = cls.priority_list_created(work_st, [com_name] + duple,
+                                                                   it_is_part, cls.prior_com_proc)
             else:
                 cls.DBless_com[it_is_part] += [com_name] + duple
             return wrapped
@@ -84,10 +103,11 @@ class VkBase(BaseClass):
         return decorator
 
     @classmethod
-    def priority_list_created(cls, pr, elements, it_is_part):
-        if len(cls.prior_com) <= pr:
-            cls.prior_com += [[], []] * (pr - len(cls.prior_com) + 1)
-        cls.prior_com[pr][it_is_part] += (elements if type(elements) == list else [elements])
+    def priority_list_created(cls, pr, elements, it_is_part, prior_com):
+        if len(prior_com) <= pr:
+            prior_com += [[], []] * (pr - len(prior_com) + 1)
+        prior_com[pr][it_is_part] += (elements if type(elements) == list else [elements])
+        return prior_com
 
     @classmethod
     def create_msg(cls, text, *args, **kwargs):
