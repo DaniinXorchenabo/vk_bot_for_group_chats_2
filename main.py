@@ -5,7 +5,8 @@ if __name__ == '__main__':
     # очередь = [(type: str, content: typle), ...]
     #   type='func':    очередь = [('func', (func, args: list, kwargs: dict)), ...]
     #   type='ev':   очередь = [('ev', (type_ev:str, data:dict, func, args, kwargs)), ...] (ev - событие)
-    #   type='text':   очередь = [('text', text: str, data: dict), ...]  data - словарь из пришедшего сообщения
+    #   type='text':   очередь = [('text', (text: str, data: dict)), ...]  data - словарь из пришедшего сообщения
+    #   text='???':     очередь = [('content', (type:str, (data): str, peer_id:int, )), ...]
     #       proc - для отправки в класс обработки сообщений
     #       db - для отправки в класс базы данных
     #       type_ev = [new_msg - новое сообщение]

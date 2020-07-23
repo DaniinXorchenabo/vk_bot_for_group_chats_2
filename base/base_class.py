@@ -45,10 +45,27 @@ class BaseClass:
         elif _type == 'ev':
             cls.event_type_proc(*content, *ar_cl, **kw_cl)
         elif _type == 'text':
-            return content
+            cls.event_type_proc(*content)
+        elif _type == 'content':  # обобщенный тип, где content - список, содержащий любое кол-во любых данных
+            cls.content_type_proc(*content)
 
     @classmethod
-    def event_type_proc(cls, type_ev: str, data: dict, func, args, kwargs, *ar_cl, **kw_cl):
+    def event_type_proc(cls, type_ev: str, data: dict, func, args_f, kwargs_f, *ar_cl, queues=dict(), **kw_cl):
+        """
+
+        :param type_ev: тип события
+        :param data: словарь с собержанием события
+        :param func:
+        :param args_f: аргументы для вызова func
+        :param kwargs_f: именованные аргументы длявызова func
+        :param ar_cl:
+        :param kw_cl:
+        :return:
+        """
+        pass
+
+    @classmethod
+    def content_type_proc(cls, *args, **kwargs):
         pass
 
     # =======! Testing !=======

@@ -61,7 +61,8 @@ class VkListen(VkBase):
                 q_func('ev', cls.find_main_com[text_find], event.raw,
                        cls.func_for_com[text_find], [], {}, pr=pr, queues=queues)
                 return
-        cls.put_proc('ev', "/new_msg", event.raw, cls.func_for_com[text_find], [], {}, pr=-1, queues=queues)
+        peer_id = event.object.peer_id
+        cls.put_proc('content', "/new_msg", text, peer_id, pr=-1, queues=queues)
         # отправление текста сообщения для составления цепей Маркова
 
 
