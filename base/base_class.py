@@ -1,3 +1,5 @@
+from base.base_libs import *
+
 class BaseClass:
     run = False
     kw = dict()
@@ -7,21 +9,7 @@ class BaseClass:
     @classmethod
     def start(cls, *ar_cl, queues=dict(), **kw_cl):
         try:
-            from itertools import dropwhile, islice
-
-
-            # =======! связь между процессами !=======
-            [setattr(BaseClass, 'put_' + key,
-                     staticmethod(lambda _type, *content, queues=dict(): queues[key].put((_type, content))))
-             for key, q in queues.items() if type(q) != dict and not hasattr(BaseClass, 'put_' + key)]
-            [setattr(BaseClass, 'put_' + key,
-                     staticmethod(lambda _type, *content, pr=-1, queues=dict(): queues[key][pr].put((_type, content))))
-             for key, q in queues.items() if type(q) == dict and not hasattr(BaseClass, 'put_' + key)]  # pr - приоритет
-            [setattr(BaseClass, 'get_' + key,
-                     staticmethod(lambda queues=dict(): next(map(lambda i: (i if i else i.get()), (islice(
-                         dropwhile(lambda i: not i or i.empty(), iter(queues[key] + [None])), 1))))))
-             for key, q in queues.items() if type(q) == dict and not hasattr(BaseClass, 'get_' + key)]
-
+            cls.create_relation_proc(queues)
             cls.run = True
             cls.child_start(*ar_cl, queues=queues, **kw_cl)
         except Exception as e:
@@ -33,8 +21,35 @@ class BaseClass:
     def child_start(cls, *ar_cl, **kw_cl):
         pass
 
+    # =======! связь между процессами !=======
+    @classmethod
+    def create_relation_proc(cls, queues):
+        from itertools import dropwhile, islice
 
+        [setattr(BaseClass, 'put_' + key,
+                 staticmethod(lambda _type, *content, queues=dict(): queues[key].put((_type, content))))
+         for key, q in queues.items() if type(q) != dict and not hasattr(BaseClass, 'put_' + key)]
+        [setattr(BaseClass, 'put_' + key,
+                 staticmethod(lambda _type, *content, pr=-1, queues=dict(): queues[key][pr].put((_type, content))))
+         for key, q in queues.items() if type(q) == dict and not hasattr(BaseClass, 'put_' + key)]  # pr - приоритет
+        [setattr(BaseClass, 'get_' + key,
+                 staticmethod(lambda queues=dict(): next(map(lambda i: (i if i else i.get()), (islice(
+                     dropwhile(lambda i: not i or i.empty(), iter(queues[key] + [None])), 1)))))  )
+         for key, q in queues.items() if type(q) == dict and not hasattr(BaseClass, 'get_' + key)]
 
+    @classmethod
+    def q_data_proc(cls, _type, content, *ar_cl, **kw_cl):
+        if _type == 'func':
+            func, ar_finc, kw_func = content
+            return func(*ar_finc, **kw_func)
+        elif _type == 'ev':
+            cls.event_type_proc(*content, *ar_cl, **kw_cl)
+        elif _type == 'text':
+            return content
+
+    @classmethod
+    def event_type_proc(cls, type_ev: str, data: dict, func, args, kwargs, *ar_cl, **kw_cl):
+        pass
 
     # =======! Testing !=======
     @classmethod

@@ -11,3 +11,4 @@ if os.path.exists(config_path):
 else:
     print("Config not found! Exiting!")
     sys.exit(1)
+
