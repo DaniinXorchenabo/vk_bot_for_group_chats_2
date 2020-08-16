@@ -51,16 +51,15 @@ class VkListen(VkBase):
         print('-===========')
         # проверяем, может команда не требует доступа к БД
         if text_find in cls.DBless_com[cl_com]:
-            print('*&&&&&&&&&&')
-            print('&^6666', cls.func_for_com, cls.func_for_com[text_find])
-            print(cls.func_for_com[text_find](cls, ))
-            print('-=-==-=-=-')
             cls.put_send('text', cls.func_for_com[text_find](cls), event.raw, queues=queues)
             return
+
         # если запрос нужно отправить сначала в обработку, то отправляем. В противном случае отправляем в БД
-        for arr, q_func in [(cls.prior_com_proc, cls.put_proc), (cls.prior_com_db, cls.put_db)]:
+        for arr, q_func in [(cls.prior_com_proc, cls.put_proc),
+                            (cls.prior_com_db, cls.put_db)]:
             com, pr = next(cls.islice(((commands_p, ind) for ind, commands_p in enumerate(arr + [None])
                                        if not commands_p or text_find in commands_p[cl_com]), 1))
+            print(com, pr)
             if com:  # com = None or list
                 q_func('ev', cls.find_main_com[text_find], event.raw,
                        cls.func_for_com[text_find], [], {}, pr=pr, queues=queues)

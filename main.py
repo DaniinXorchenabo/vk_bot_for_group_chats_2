@@ -43,7 +43,7 @@ if __name__ == '__main__':
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps},
                           error_callback=error_callback_func) for i in [VkListen, VkSending]]
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps},
-                               error_callback=error_callback_func) for i in [ControlDB, ProcessingMsg]])
+                               error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
     while True:
         sleep(1)

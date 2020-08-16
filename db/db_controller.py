@@ -20,18 +20,20 @@ class ControlDB(BaseClass):
             queue = cls.get_db(queues=queues)
             # print('************', queue)
             if queue:
-                cls.q_data_proc(queue.get())
+                print('from db class', queue)
+                cls.q_data_proc(*queue)
             else:
                 sleep(0.1)
 
     # =======! Processing !=======
     @classmethod
     def content_type_proc(cls, comamnd, *args_q,  queues=dict(), **kwargs_q):
-        cls.func_for_com[comamnd](comamnd, *args_q, queues=queues, **kwargs_q)
+        print(comamnd, *args_q,  queues, kwargs_q)
+        cls.func_for_com[comamnd](cls, comamnd, *args_q, queues=queues, **kwargs_q)
 
     @classmethod
     def event_type_proc(cls, type_ev: str, data: dict, func, args_f, kwargs_f, *ar_cl, queues=dict(), **kw_cl):
-        cls.func_for_com[type_ev](type_ev, data, func, args_f, kwargs_f, *ar_cl, queues=queues, **kw_cl)
+        cls.func_for_com[type_ev](cls, type_ev, data, func, args_f, kwargs_f, *ar_cl, queues=queues, **kw_cl)
 
     # =======! Create Decorator !=======
     @classmethod
@@ -39,7 +41,7 @@ class ControlDB(BaseClass):
         def decorator(func):
             def wrapped(*args, **kwargs):
                 return func(cls, *args, **kwargs)
-            cls.func_for_com[comand] = wrapped
+            cls.func_for_com[comand] = func
             return wrapped
         return decorator
 

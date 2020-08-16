@@ -3,6 +3,7 @@ from base.base_class import *
 
 class ProcessingMsg(BaseClass):
     from collections import Counter
+
     func_for_com = dict()  # {'command_name': working_finc, ...}
 
     # =======! Starting !=======
@@ -15,17 +16,20 @@ class ProcessingMsg(BaseClass):
     def working(cls, queues):
         while cls.run:
             q_or_none = cls.get_proc(queues=queues)
+
             if q_or_none:
-                cls.q_data_proc(*q_or_none.get(), queues=queues)  # -> cls.event_type_proc() or content_type_proc()
+                print('from ProcessingMsg.working', q_or_none)
+                cls.q_data_proc(*q_or_none, queues=queues)  # -> cls.event_type_proc() or content_type_proc()
+            sleep(0.1)
 
     # =======! Processing !=======
     @classmethod
     def event_type_proc(cls, type_ev, *args, queues=dict(), **kw_cl):  # str, data: dict, func, args_for_func, kwargs_for_func, *ar_cl, queues=dict(),
-        cls.func_for_com[type_ev](type_ev, *args, queues=queues, **kw_cl)
+        cls.func_for_com[type_ev](cls, type_ev, *args, queues=queues, **kw_cl)
 
     @classmethod
-    def content_type_proc(cls, type_ev, *args):
-        cls.func_for_com[type_ev](cls, type_ev, *args)
+    def content_type_proc(cls, type_ev, *args, queues=dict(), **kw_cl):
+        cls.func_for_com[type_ev](cls, type_ev, *args, queues=queues, **kw_cl)
 
     # =======! добавление функций обработки в список !=======
     @classmethod
@@ -48,7 +52,7 @@ class ProcessingMsg(BaseClass):
                 #cls.put_db(_type, *res, pr=pr, queues=queues)
                 return res
 
-            cls.func_for_com[com_name] = wrapped
+            cls.func_for_com[com_name] = func
             return wrapped
 
         return decorator

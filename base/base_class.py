@@ -43,14 +43,14 @@ class BaseClass:
 
         print('создание очередей с приоритетом:', end='\t')
         [(setattr(BaseClass, 'put_' + key,
-                 staticmethod(lambda _type, *content, pr=-1, queues=dict(): queues[key][pr].put((_type, content)))), print('put_' + key, end='\t'))
+                 staticmethod(lambda _type, *content, pr=-1, queues=dict(), key_f=str(key): queues[key_f][pr].put((_type, content)))), print('put_' + key, end='\t'))
          for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'put_' + key)]  # pr - приоритет
         print('завершилось')
 
         print(cls.__name__, 'создание получения элемента с приоритетом....', end='\t')
         [setattr(BaseClass, 'get_' + key, staticmethod(
-            lambda queues=dict(): next(map(lambda i: (i if not i else i.get()), islice(
-                dropwhile(lambda i: (hasattr(i, 'empty') and i.empty()), iter(queues[key] + [None])), 1)))))
+            lambda queues=dict(), key_f=str(key): next(map(lambda i: (i if not i else i.get()), islice(
+                dropwhile(lambda i: (hasattr(i, 'empty') and i.empty()), iter(queues[key_f] + [None])), 1)))))
          for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'get_' + key)]
         print('успешно завершено')
 
@@ -66,9 +66,9 @@ class BaseClass:
             text, ev_dict = content
             return text, ev_dict
         elif _type == 'content':  # обобщенный тип, где content - список, содержащий любое кол-во любых данных
-            cls.content_type_proc(*content)
+            cls.content_type_proc(*content, *ar_cl, **kw_cl)
 
-    @classmethod
+    @classmethod  # для переопределения
     def event_type_proc(cls, type_ev: str, data: dict, func, args_f, kwargs_f, *ar_cl, queues=dict(), **kw_cl):
         """
 
@@ -83,41 +83,41 @@ class BaseClass:
         """
         pass
 
-    @classmethod
+    @classmethod  # для переопределения
     def content_type_proc(cls, *args, **kwargs):
         pass
 
-    # =======! Testing !=======
-    @classmethod
-    def base_proc(cls, msg):
-        for i in cls.kw:
-            if msg == i:
-                cls.kw[i]()
-
-    @classmethod
-    def test(cls, base_com, list_comands: list = [], func_com: list = []):
-        def decorator(func):
-            def decorator_decorator(*args2, **kwargs2):
-                print('************')
-                func(*args2, **kwargs2)
-                print('************')
-
-            cls.kw.update({i: decorator_decorator for i in [base_com] + list_comands})
-            cls.funk_kw.update({i: decorator_decorator for i in func_com})
-            return decorator_decorator
-
-        return decorator
-
-
-@BaseClass.test('привет')
-def proc_1_2(*ar, **kw):
-    print('и тебе привет!')
+    # # =======! Testing !=======
+    # @classmethod
+    # def base_proc(cls, msg):
+    #     for i in cls.kw:
+    #         if msg == i:
+    #             cls.kw[i]()
+    #
+    # @classmethod
+    # def test(cls, base_com, list_comands: list = [], func_com: list = []):
+    #     def decorator(func):
+    #         def decorator_decorator(*args2, **kwargs2):
+    #             print('************')
+    #             func(*args2, **kwargs2)
+    #             print('************')
+    #
+    #         cls.kw.update({i: decorator_decorator for i in [base_com] + list_comands})
+    #         cls.funk_kw.update({i: decorator_decorator for i in func_com})
+    #         return decorator_decorator
+    #
+    #     return decorator
 
 
-@BaseClass.test('пока')
-def proc_1_5(*ar, **kw):
-    print('и тебе пока!')
-    print('arrrrrrrrrrrrrrrrrrrrrrrr')
+# @BaseClass.test('привет')
+# def proc_1_2(*ar, **kw):
+#     print('и тебе привет!')
+#
+#
+# @BaseClass.test('пока')
+# def proc_1_5(*ar, **kw):
+#     print('и тебе пока!')
+#     print('arrrrrrrrrrrrrrrrrrrrrrrr')
 
 
 

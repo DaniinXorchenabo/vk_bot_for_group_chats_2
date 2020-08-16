@@ -12,6 +12,7 @@ class Words(db.Entity):
     count_vals = Optional(int, default=0)  # кол-во встречающихся слов
     vals_dict = Optional(Json)  # dict(str, [int])  (ключевое слово: количество повторений)
     chat = Optional('Chat')
+    PrimaryKey(chat_id, word)
 
 
 class Chat(db.Entity):
