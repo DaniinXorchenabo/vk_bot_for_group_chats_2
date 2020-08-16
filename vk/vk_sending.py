@@ -13,19 +13,19 @@ class VkSending(VkBase):
 
     # =======! Starting !=======
     @classmethod
-    def child_start(cls, queues, users, *ar_cl, **kw_cl):
-        super().child_start(queues, users, *ar_cl, **kw_cl)
+    def child_start(cls, *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
+        super().child_start(*ar_cl, queues=queues, vip_users=vip_users, **kw_cl)
         cls.admin_pas = cfg.get("passwords", "admin")
         cls.dev_pas = cfg.get("passwords", "developer")
         cls.morph = cls.MorphAnalyzer()
-        cls.working(queues, users, *ar_cl, **kw_cl)
+        cls.working(queues, vip_users, *ar_cl, **kw_cl)
 
     # =======! Working !=======
     @classmethod
     def working(cls, queues, users, *ar_cl, **kw_cl):
         while cls.run:
             if not queues['send'].empty():
-                cls.send(*cls.q_data_proc(queues['send'].get()))
+                cls.send_msg(*cls.q_data_proc(*queues['send'].get()))
             else:
                 sleep(0.1)
 
@@ -68,7 +68,7 @@ class VkSending(VkBase):
     # =======! Sending !=======
     @classmethod
     def send_msg(cls, text, old_msg):
-        msg = cls.gen_answ_dict(cls.constructor_msg(text, **old_msg), func=lambda i: type(i) != dict)
+        msg = cls.gen_answ_dict(cls.constructor_msg(text, old_msg), func=lambda i: type(i) != dict)
         cls.vk_session.method("messages.send", msg)
 
 

@@ -7,7 +7,7 @@ if __name__ == '__main__':
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
 
-
+from processing.processing_messenges import ProcessingMsg
 @ProcessingMsg.command('/new_msg', pr=-1)
 def new_msg_proc(cls, type_ev, text, peer_id, *args, queues=dict(), **kwargs):
     if type(text) == list:

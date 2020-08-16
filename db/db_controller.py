@@ -8,13 +8,17 @@ class ControlDB(BaseClass):
     # =======! Started !=======
     @classmethod
     def child_start(cls, *ar_cl, queues=dict(), **kw_cl):
+        print('-0-0---0')
         cls.working(*ar_cl, queues=queues, **kw_cl)
 
     # =======! Working !=======
     @classmethod
     def working(cls, *ar_cl, queues=dict(), **kw_cl):
         while cls.run:
+            # print('-========', hasattr(cls, 'get_db'))
+
             queue = cls.get_db(queues=queues)
+            # print('************', queue)
             if queue:
                 cls.q_data_proc(queue.get())
             else:

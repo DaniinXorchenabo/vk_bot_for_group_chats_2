@@ -32,8 +32,8 @@ class VkBase(BaseClass):
     admin_com = []  # команды, доступные только из админки
     developer_com = []  # команды, доступные только для разработчика
     help_command = ''
-    admins = dict()  # {peer_id: seeeion}
-    developers = dict()  # {peer_id: seeeion}
+    admins = dict()  # {peer_id: seeeion (bool), ...}
+    developers = dict()  # {peer_id: seeeion (boop), ...}
 
     list_keys = ['user_id', "random_id", "peer_id", "domain",
                  "chat_id", "user_ids", "message", "lat", "long",
@@ -42,14 +42,26 @@ class VkBase(BaseClass):
                  "dont_parse_links", "disable_mentions", "intent",
                  "subscribe_id"]
 
+
+
     # =======! Started !=======
+
+    @classmethod
+    def common_start(cls, **kw_init):
+        """
+        запускается в начальном потоке, чтобы не выполнять одинаковые операции в начале
+        на разных потоках
+        """
+        if not cls.vk_session:
+            cls.start_base_vk()
+
     @classmethod
     def start_base_vk(cls):
         cls.vk_session = VkApi(token=cfg.get("vk", "token"))
         cls.all_commands += list(cls.func_for_com.keys())
 
     @classmethod
-    def child_start(cls, queues, users, *ar_cl, **kw_cl):
+    def child_start(cls,  *ar_cl, queues=dict(), users=dict(), **kw_cl):
         if not cls.vk_session:
             cls.start_base_vk()
 
@@ -81,6 +93,12 @@ class VkBase(BaseClass):
 
         """
         def decorator(func):
+            # print('from decorator', func)
+            # setattr(cls, 'standart_' + func.__name__, classmethod(func))
+            # new_func = getattr(cls, 'standart_' + func.__name__)
+            # print('from decorator', new_func, func)
+
+            #@wraps(func)
             def wrapped(*args_dec, **kwargs_dec):
                 """
                 могут быть нужны:
@@ -93,11 +111,16 @@ class VkBase(BaseClass):
                 """
                 # pre_other
                 res = func(cls, *args_dec, **kwargs_dec)
-                cls.create_msg(res, )
+                return cls.create_msg(res, )
 
-            cls.func_for_com.update({i: wrapped for i in [com_name] + duple})
+            # setattr(cls, func.__name__, classmethod(wrapped))
+            # print('проверка, есть ли ' + func.__name__, hasattr(cls, func.__name__))
+            # new_wrapped = getattr(cls, func.__name__ )
+            print('from decorator', func, func.__name__)
+            cls.func_for_com.update({i: func for i in [com_name] + duple})
             cls.find_main_com.update({com_name: i for i in [com_name] + duple})
-            cls.rec_com.update({i: (com_name, wrapped) for i in rec_f})
+            cls.rec_com.update({i: (com_name, func) for i in rec_f})
+            print('*(((((((((((((((((((')
             if db_acc:
                 work_st, db_st = db_acc
                 if not work_st:  # если вычисления не тяжелые, то отправляем сразу в БД
@@ -108,8 +131,9 @@ class VkBase(BaseClass):
                                                                    it_is_part, cls.prior_com_proc)
             else:
                 cls.DBless_com[it_is_part] += [com_name] + duple
+            print('_____________________________++++++++')
             return wrapped
-
+        print('8080808*********')
         return decorator
 
     @classmethod
@@ -121,7 +145,7 @@ class VkBase(BaseClass):
 
     @classmethod
     def create_msg(cls, text, *args, **kwargs):
-        pass
+        return text
 
 
 from vk.vk_commands import *

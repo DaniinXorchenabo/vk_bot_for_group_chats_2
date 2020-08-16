@@ -9,6 +9,9 @@ if __name__ == '__main__':
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
 
+from db.db_controller import ControlDB
+from db.models import *
+
 @ControlDB.command('/new_msg')
 @db_session
 def db_working_with_new_msg(cls, comamnd, _type, data, id_chat, *args_q, queues=dict(), **kwargs_q):

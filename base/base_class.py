@@ -7,10 +7,15 @@ class BaseClass:
 
     # =======! Инициализация !=======
     @classmethod
+    def common_start(cls, queues=dict()):
+        cls.create_relation_proc(queues)
+
+    @classmethod
     def start(cls, *ar_cl, queues=dict(), **kw_cl):
         try:
             cls.create_relation_proc(queues)
             cls.run = True
+            print('child_start starting ')
             cls.child_start(*ar_cl, queues=queues, **kw_cl)
         except Exception as e:
             print('произошла ошибка в', cls.__name__ + ':', e)
@@ -26,16 +31,28 @@ class BaseClass:
     def create_relation_proc(cls, queues):
         from itertools import dropwhile, islice
 
-        [setattr(BaseClass, 'put_' + key,
-                 staticmethod(lambda _type, *content, queues=dict(): queues[key].put((_type, content))))
-         for key, q in queues.items() if type(q) != dict and not hasattr(BaseClass, 'put_' + key)]
-        [setattr(BaseClass, 'put_' + key,
-                 staticmethod(lambda _type, *content, pr=-1, queues=dict(): queues[key][pr].put((_type, content))))
-         for key, q in queues.items() if type(q) == dict and not hasattr(BaseClass, 'put_' + key)]  # pr - приоритет
-        [setattr(BaseClass, 'get_' + key,
-                 staticmethod(lambda queues=dict(): next(map(lambda i: (i if i else i.get()), (islice(
-                     dropwhile(lambda i: not i or i.empty(), iter(queues[key] + [None])), 1)))))  )
-         for key, q in queues.items() if type(q) == dict and not hasattr(BaseClass, 'get_' + key)]
+
+        # print(['put_' + key + str(type(q)) for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'put_' + key)])  # pr - приоритет)
+
+        print('создание очередей без приоритета:', end='\t')
+        [(setattr(BaseClass, 'put_' + key,
+                 staticmethod(lambda _type, *content, queues=dict(), key_f=str(key): (print('put_' + key_f + ' working ---=-=-=-=', queues[key_f]), queues[key_f].put((_type, content)), print('put_' + key_f + ' ended', end='\t')))),
+          print('put_' + key, end='\t'))
+         for key, q in queues.items() if type(q) != list and not hasattr(BaseClass, 'put_' + key)]
+        print('завершилось')
+
+        print('создание очередей с приоритетом:', end='\t')
+        [(setattr(BaseClass, 'put_' + key,
+                 staticmethod(lambda _type, *content, pr=-1, queues=dict(): queues[key][pr].put((_type, content)))), print('put_' + key, end='\t'))
+         for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'put_' + key)]  # pr - приоритет
+        print('завершилось')
+
+        print(cls.__name__, 'создание получения элемента с приоритетом....', end='\t')
+        [setattr(BaseClass, 'get_' + key, staticmethod(
+            lambda queues=dict(): next(map(lambda i: (i if not i else i.get()), islice(
+                dropwhile(lambda i: (hasattr(i, 'empty') and i.empty()), iter(queues[key] + [None])), 1)))))
+         for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'get_' + key)]
+        print('успешно завершено')
 
     @classmethod
     def q_data_proc(cls, _type, content, *ar_cl, **kw_cl):
@@ -45,7 +62,9 @@ class BaseClass:
         elif _type == 'ev':
             cls.event_type_proc(*content, *ar_cl, **kw_cl)
         elif _type == 'text':
-            cls.event_type_proc(*content)
+            # cls.content_type_proc(*content)
+            text, ev_dict = content
+            return text, ev_dict
         elif _type == 'content':  # обобщенный тип, где content - список, содержащий любое кол-во любых данных
             cls.content_type_proc(*content)
 
@@ -101,15 +120,9 @@ def proc_1_5(*ar, **kw):
     print('arrrrrrrrrrrrrrrrrrrrrrrr')
 
 
-class Child(BaseClass):
-    pass
 
-
-class BaseClass: pass
-
-
-setattr(BaseClass, 'printer', classmethod(lambda i, word='хей хей хей': print(word)))
-BaseClass.printer()  # >>хей хей хе
+# setattr(BaseClass, 'printer', classmethod(lambda i, word='хей хей хей': print(word)))
+# BaseClass.printer()  # >>хей хей хе
 
 if __name__ == '__main__':
     from os import getcwd, chdir
@@ -118,5 +131,3 @@ if __name__ == '__main__':
     path = os_split(getcwd())
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
-
-    Child.base_proc('пока')

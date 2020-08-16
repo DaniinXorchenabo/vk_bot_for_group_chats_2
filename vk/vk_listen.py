@@ -7,10 +7,10 @@ class VkListen(VkBase):
 
     # =======! Starting !=======
     @classmethod
-    def child_start(cls, queues, vip_users, *ar_cl, **kw_cl):
-        super().child_start(queues, vip_users, *ar_cl, **kw_cl)
+    def child_start(cls,  *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
+        super().child_start(*ar_cl, queues=queues, vip_users=vip_users, **kw_cl)
         cls.longpoll = VkBotLongPoll(cls.vk_session, group_id=cfg.get("vk", "group"))
-        cls.listen_events()
+        cls.listen_events(queues, vip_users)
 
     # =======! Working !=======
     @classmethod
@@ -48,11 +48,15 @@ class VkListen(VkBase):
              Если это не так, то попробуйте ввести: /login_dev''', event.raw, queues=queues)
             return
 
+        print('-===========')
         # проверяем, может команда не требует доступа к БД
         if text_find in cls.DBless_com[cl_com]:
-            cls.put_send('func', cls.func_for_com[text_find], [], {'queues': queues, 'event': event.raw}, queues=queues)
+            print('*&&&&&&&&&&')
+            print('&^6666', cls.func_for_com, cls.func_for_com[text_find])
+            print(cls.func_for_com[text_find](cls, ))
+            print('-=-==-=-=-')
+            cls.put_send('text', cls.func_for_com[text_find](cls), event.raw, queues=queues)
             return
-
         # если запрос нужно отправить сначала в обработку, то отправляем. В противном случае отправляем в БД
         for arr, q_func in [(cls.prior_com_proc, cls.put_proc), (cls.prior_com_db, cls.put_db)]:
             com, pr = next(cls.islice(((commands_p, ind) for ind, commands_p in enumerate(arr + [None])
