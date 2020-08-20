@@ -7,7 +7,7 @@ class VkListen(VkBase):
 
     # =======! Starting !=======
     @classmethod
-    def child_start(cls,  *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
+    def child_start(cls, *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
         super().child_start(*ar_cl, queues=queues, vip_users=vip_users, **kw_cl)
         cls.longpoll = VkBotLongPoll(cls.vk_session, group_id=cfg.get("vk", "group"))
         cls.listen_events(queues, vip_users)
@@ -61,7 +61,5 @@ class VkListen(VkBase):
                 cls.func_for_com[text_find](cls, code_comand, event.raw, pr=pr, queues=queues)
                 return
         peer_id = event.object.peer_id
-        cls.put_proc('content', "/new_msg", text, peer_id, pr=-1, queues=queues)
+        cls.put_proc('content', "/new_msg", (text, peer_id), pr=-1, queues=queues)
         # отправление текста сообщения для составления цепей Маркова
-
-

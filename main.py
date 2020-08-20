@@ -10,7 +10,7 @@ if __name__ == '__main__':
     from base.base_libs import *
     from base.base_class import BaseClass
     from vk.vk_base_class import VkBase
-    #from vk.vk_commands import *
+    # from vk.vk_commands import *
     from processing.processing_messenges import ProcessingMsg
     from db.db_controller import ControlDB
     from vk.vk_listen import VkListen
@@ -49,4 +49,3 @@ if __name__ == '__main__':
     [i.ready() for i in r]
     while True:
         sleep(1)
-

@@ -2,6 +2,7 @@ from base.base_class import BaseClass
 from db.models import *
 from base.base_libs import *
 
+
 class ControlDB(BaseClass):
     func_for_com = dict()
 
@@ -27,8 +28,8 @@ class ControlDB(BaseClass):
 
     # =======! Processing !=======
     @classmethod
-    def content_type_proc(cls, comamnd, *args_q,  queues=dict(), **kwargs_q):
-        print('-877&^^%', [comamnd], *args_q,  queues, kwargs_q)
+    def content_type_proc(cls, comamnd, *args_q, queues=dict(), **kwargs_q):
+        print('-877&^^%', [comamnd], *args_q, queues, kwargs_q)
         print(cls.func_for_com)
         print('-8*********')
         cls.func_for_com[comamnd](cls, comamnd, *args_q, queues=queues, **kwargs_q)
@@ -43,12 +44,11 @@ class ControlDB(BaseClass):
         def decorator(func):
             def wrapped(*args, **kwargs):
                 return func(cls, *args, **kwargs)
+
             cls.func_for_com[comand] = func
             return wrapped
+
         return decorator
-
-
-
 
 
 if __name__ == '__main__':

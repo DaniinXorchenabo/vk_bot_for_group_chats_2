@@ -9,7 +9,6 @@ from vk_api.bot_longpoll import (
 
 
 class VkBase(BaseClass):
-
     vk_session = None
 
     func_for_com = dict()  # {str: processing_func, ...} содержит все команды и функции их обработки
@@ -52,7 +51,7 @@ class VkBase(BaseClass):
         cls.all_commands += list(cls.func_for_com.keys())
 
     @classmethod
-    def child_start(cls,  *ar_cl, queues=dict(), users=dict(), **kw_cl):
+    def child_start(cls, *ar_cl, queues=dict(), users=dict(), **kw_cl):
         if not cls.vk_session:
             cls.start_base_vk()
 
@@ -83,13 +82,14 @@ class VkBase(BaseClass):
         соответствующие db_acc = (False, number: int)
 
         """
+
         def decorator(func):
             # print('from decorator', func)
             # setattr(cls, 'standart_' + func.__name__, classmethod(func))
             # new_func = getattr(cls, 'standart_' + func.__name__)
             # print('from decorator', new_func, func)
 
-            #@wraps(func)
+            # @wraps(func)
             def wrapped(*args_dec, **kwargs_dec):
                 """
                 могут быть нужны:
@@ -124,6 +124,7 @@ class VkBase(BaseClass):
                 cls.DBless_com[it_is_part] += [com_name] + duple
             print('_____________________________++++++++')
             return wrapped
+
         print('8080808*********')
         return decorator
 

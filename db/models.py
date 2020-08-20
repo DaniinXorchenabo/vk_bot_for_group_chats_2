@@ -52,7 +52,6 @@ def is_DB_created(path):
             db.generate_mapping(create_tables=True)
 
 
-
 if __name__ == '__main__':
     from os import getcwd
     from os.path import split as os_split
@@ -62,4 +61,5 @@ if __name__ == '__main__':
     is_DB_created(path)
 else:
     from os import getcwd
+
     is_DB_created(getcwd())

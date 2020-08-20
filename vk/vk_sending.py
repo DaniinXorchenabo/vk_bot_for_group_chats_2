@@ -28,6 +28,7 @@ class VkSending(VkBase):
                 #         continue
             else:
                 sleep(0.1)
+
     # =======! Обработка Очередей !=======
     @classmethod
     def cooking_msg_type_proc(cls, msg_dict, *args, queues=dict(), **kwargs):
@@ -53,7 +54,6 @@ class VkSending(VkBase):
     @classmethod
     def send_msg(cls, msg: dict):
         cls.vk_session.method("messages.send", cls.add_peculiar_properties(msg))
-
 
 
 if __name__ == '__main__':

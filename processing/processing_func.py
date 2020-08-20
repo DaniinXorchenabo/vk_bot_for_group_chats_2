@@ -13,6 +13,7 @@ if __name__ == '__main__':
 
 @ProcessingMsg.command('/new_msg', pr=-1)
 def new_msg_proc(cls, type_ev, text, peer_id, *args, queues=dict(), **kwargs):
+    print(text)
     if type(text) == list:
         text = ' '.join(text)
     _dict = dict()

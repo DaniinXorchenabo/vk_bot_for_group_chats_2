@@ -24,7 +24,8 @@ class ProcessingMsg(BaseClass):
 
     # =======! Processing !=======
     @classmethod
-    def event_type_proc(cls, type_ev, *args, queues=dict(), **kw_cl):  # str, data: dict, func, args_for_func, kwargs_for_func, *ar_cl, queues=dict(),
+    def event_type_proc(cls, type_ev, *args, queues=dict(),
+                        **kw_cl):  # str, data: dict, func, args_for_func, kwargs_for_func, *ar_cl, queues=dict(),
         cls.func_for_com[type_ev](cls, type_ev, *args, queues=queues, **kw_cl)
 
     @classmethod
@@ -32,7 +33,6 @@ class ProcessingMsg(BaseClass):
         print(type_ev, *data)
 
         cls.func_for_com[type_ev](cls, type_ev, *data, queues=queues, **kw_cl)
-
 
     # =======! добавление функций обработки в список !=======
     @classmethod
@@ -52,14 +52,13 @@ class ProcessingMsg(BaseClass):
                 :return:
                 """
                 res = func(cls, *args_dec, **kwargs_dec)  # функция должна класть результаты в очередь
-                #cls.put_db(_type, *res, pr=pr, queues=queues)
+                # cls.put_db(_type, *res, pr=pr, queues=queues)
                 return res
 
             cls.func_for_com[com_name] = func
             return wrapped
 
         return decorator
-
 
 
 if __name__ == '__main__':

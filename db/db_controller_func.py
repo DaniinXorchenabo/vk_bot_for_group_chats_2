@@ -12,7 +12,6 @@ if __name__ == '__main__':
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
 
-
 from db.db_controller import ControlDB
 from db.models import *
 from collections import Counter
