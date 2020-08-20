@@ -92,3 +92,22 @@ def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
     print('***44434-20-34', cls, hasattr(cls, 'put_proc'))
     cls.put_proc('content', '/gen', (ans, event), pr=0, queues=queues)
     print('*______))))))))))))')
+
+
+@ControlDB.command('/erease', pr=0)
+@db_session
+def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
+    id_chat = event['object']['peer_id']
+
+    if not Chat.exists(id=id_chat):
+        Chat(id=id_chat)
+        flush()
+    # print('очищение помяти БД')
+    try:
+        delete(w for w in Words if w.chat_id == id_chat)
+        Chat[id_chat].delete()
+        ans = 'Память была успешно очищена😎'
+    except Exception as e:
+        print('произошла ошибка при очищении памяти чата', id_chat, ":", e)
+        ans = 'При очищении память произошла какая-то ошибка👉🏻👈🏻😅'
+    cls.put_send('text', ans, event, queues=queues)

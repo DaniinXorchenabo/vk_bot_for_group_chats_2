@@ -10,6 +10,7 @@ class VkListen(VkBase):
     def child_start(cls, *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
         super().child_start(*ar_cl, queues=queues, vip_users=vip_users, **kw_cl)
         cls.longpoll = VkBotLongPoll(cls.vk_session, group_id=cfg.get("vk", "group"))
+        print()
         cls.listen_events(queues, vip_users)
 
     # =======! Working !=======
@@ -51,15 +52,25 @@ class VkListen(VkBase):
             return
 
         # если запрос нужно отправить сначала в обработку, то отправляем. В противном случае отправляем в БД
-        for arr, q_func in [(cls.prior_com_proc, cls.put_proc),
-                            (cls.prior_com_db, cls.put_db)]:
-            com, pr = next(cls.islice(((commands_p, ind) for ind, commands_p in enumerate(arr + [None])
+        for arr in [cls.prior_com_proc, cls.prior_com_db]:
+            com, pr = next(cls.islice((((text_find if commands_p else None), ind)
+                                       for ind, commands_p in enumerate(arr + [None])
                                        if not commands_p or text_find in commands_p[cl_com]), 1))
             print('com, pr', com, pr)
             if com:  # com = None or list
-                code_comand = cls.find_main_com[text_find](cls)
-                cls.func_for_com[text_find](cls, code_comand, event.raw, pr=pr, queues=queues)
+                print(cls.find_main_com, text_find)
+                code_comand = cls.find_main_com[text_find]
+                print('*******')
+                cls.func_for_com[code_comand](cls, code_comand, event=event.raw, pr=pr, queues=queues)
                 return
-        peer_id = event.object.peer_id
-        cls.put_proc('content', "/new_msg", (text, peer_id), pr=-1, queues=queues)
-        # отправление текста сообщения для составления цепей Маркова
+
+        # если команда все еще не распознана, то проверяем,
+        # может быть пришедший текст подходит под какую-нибудь функцию обработки
+        func, (name_com, func_proc) = next(((key_f, val) for key_f, val in list(cls.rec_com.items()) + [
+            (lambda i: True, (None, None))] if key_f(text)))
+        if name_com:
+            func_proc(cls, name_com, event=event.raw, queues=queues)
+            return
+
+        # если команда не распознана, то отправляем текста сообщения для составления цепей Маркова
+        cls.put_proc('content', "/new_msg", (text, event.object.peer_id), pr=-1, queues=queues)

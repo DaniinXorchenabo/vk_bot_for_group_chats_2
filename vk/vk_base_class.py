@@ -27,7 +27,12 @@ class VkBase(BaseClass):
     # списиок списков. первый индекс - приоритетность запроса
     prior_com_proc = []  # type: list[list[(str), (str)]]  # команды, отправляемые сначала на обработку
     prior_com_db = []  # type: list[list[(str), (str)]]  # Команды, идущие сразу в БД
-
+    """
+    [
+     [[str, ...], [str, ...]], ...
+    ]
+    prior_com_db[приоритетность команды][0 - если просто команда; 1 - если команда с аргументами]
+    """
     admin_com = []  # команды, доступные только из админки
     developer_com = []  # команды, доступные только для разработчика
     help_command = ''
@@ -71,6 +76,8 @@ class VkBase(BaseClass):
                         (num1: int, True)   num1 - запрос требует долгих предварительных вычислений, передаем запрос
                                                     в класс обработки сообщений. num1 - приоритетность запроса
                                             True - дальше передаем запрос в БД
+                        (None, num2: int)   Передаем запрос сначала в БД, потом в обработку по процессам
+                                            num2 - приоритет при отправке в БД
         **********************************************************************************************************
         если вы подаете db_acc = (False, number: int), то необходимо обязательно прописать
         @ControlDB.command(com_name, pr) в db/db_controller_func.py, чтобы прописать обработчик команды,
@@ -107,11 +114,11 @@ class VkBase(BaseClass):
             # setattr(cls, func.__name__, classmethod(wrapped))
             # print('проверка, есть ли ' + func.__name__, hasattr(cls, func.__name__))
             # new_wrapped = getattr(cls, func.__name__ )
-            print('from decorator', func, func.__name__)
+            # print('from decorator', func, func.__name__)
             cls.func_for_com.update({i: func for i in [com_name] + duple})
-            cls.find_main_com.update({com_name: i for i in [com_name] + duple})
+            cls.find_main_com.update({i: com_name for i in [com_name] + duple})
             cls.rec_com.update({i: (com_name, func) for i in rec_f})
-            print('*(((((((((((((((((((')
+            # print('*(((((((((((((((((((')
             if db_acc:
                 work_st, db_st = db_acc
                 if not work_st:  # если вычисления не тяжелые, то отправляем сразу в БД
@@ -122,16 +129,18 @@ class VkBase(BaseClass):
                                                                    it_is_part, cls.prior_com_proc)
             else:
                 cls.DBless_com[it_is_part] += [com_name] + duple
-            print('_____________________________++++++++')
+            # print('_____________________________++++++++')
             return wrapped
 
-        print('8080808*********')
+        # print('8080808*********')
         return decorator
 
     @classmethod
     def priority_list_created(cls, pr, elements, it_is_part, prior_com):
-        if len(prior_com) <= pr:
-            prior_com += [[], []] * (pr - len(prior_com) + 1)
+        max_len = (-pr - 1 if pr < 0 else pr)
+        if len(prior_com) <= max_len:
+            prior_com += [[[] for i in range(2)] for _ in range(max_len - len(prior_com) + 1)]
+        print('----------------', *prior_com, '-----------------', sep='\n')
         prior_com[pr][it_is_part] += (elements if type(elements) == list else [elements])
         return prior_com
 

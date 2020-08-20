@@ -9,10 +9,14 @@ def get_text_help_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     cls.put_send('text', cls.help_command, event, queues=queues)
 
 
-@VkBase.commands('/gen')
-def gen_random_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
+@VkBase.commands('/gen', db_acc=(-2, True))
+def gen_random_text(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     cls.put_db('content', '/gen', event, queues=queues, pr=-2)
 
+
+@VkBase.commands('/erease',  duple=['/er', "очистить_память_чата", "очистить_память_беседы"], db_acc=(False, 0))
+def gen_random_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
+    cls.put_db('content', '/erease', event, queues=queues, pr=0)
 
 if __name__ == '__main__':
     from os import getcwd

@@ -31,7 +31,7 @@ class BaseClass:
             cls.create_relation_proc(queues)
             cls.gen_proc_func_from_types(types)
             cls.run = True
-            print('child_start starting ')
+            print('child_start starting in', cls.__name__)
             cls.child_start(*ar_cl, queues=queues, **kw_cl)
         except Exception as e:
             print('произошла ошибка в', cls.__name__ + ':', e)
@@ -47,34 +47,33 @@ class BaseClass:
     def create_relation_proc(cls, queues):
         from itertools import dropwhile, islice
 
-        print('создание очередей без приоритета:', end='\t')
-        [(setattr(BaseClass, 'put_' + key,
+        # print('создание очередей без приоритета:', end='\t')
+        [setattr(BaseClass, 'put_' + key,
                   staticmethod(lambda _type, *content, queues=dict(), key_f=str(key): (
-                  print('put_' + key_f + ' working ---=-=-=-=', queues[key_f]), queues[key_f].put((_type, content)),
-                  print('put_' + key_f + ' ended', end='\t')))),
-          print('put_' + key, end='\t'))
+                  print('put_' + key_f + ' working', queues[key_f], end='\t'), queues[key_f].put((_type, content)),
+                  print('put_' + key_f + ' ended', end='\t'))))
          for key, q in queues.items() if type(q) != list and not hasattr(BaseClass, 'put_' + key)]
-        print('завершилось')
+        # print('завершилось')
 
-        print('создание очередей с приоритетом:', end='\t')
-        [(setattr(BaseClass, 'put_' + key,
+        # print('создание очередей с приоритетом:', end='\t')
+        [setattr(BaseClass, 'put_' + key,
                   staticmethod(lambda _type, *content, pr=-1, queues=dict(), key_f=str(key): queues[key_f][pr].put(
-                      (_type, content)))), print('put_' + key, end='\t'))
+                      (_type, content))))
          for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'put_' + key)]  # pr - приоритет
-        print('завершилось')
+        # print('завершилось')
 
-        print(cls.__name__, 'создание получения элемента с приоритетом....', end='\t')
+        # print(cls.__name__, 'создание получения элемента с приоритетом....', end='\t')
         [setattr(BaseClass, 'get_' + key, staticmethod(
             lambda queues=dict(), key_f=str(key): next(map(lambda i: (i if not i else i.get()), islice(
                 dropwhile(lambda i: (hasattr(i, 'empty') and i.empty()), iter(queues[key_f] + [None])), 1)))))
          for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'get_' + key)]
-        print('успешно завершено')
+        # print('успешно завершено')
 
     @classmethod
     def q_data_proc(cls, _type, content, *ar_cl, queues=dict(), **kw_cl):
-        print(hasattr(cls, _type + '_type_proc'))
+        # print(hasattr(cls, _type + '_type_proc'))
         if hasattr(cls, _type + '_type_proc'):
-            print(getattr(cls, _type + '_type_proc'), [*content])
+            # print(getattr(cls, _type + '_type_proc'), [*content])
             getattr(cls, _type + '_type_proc')(*content, queues=queues, **kw_cl)
 
     @classmethod
@@ -85,16 +84,16 @@ class BaseClass:
     # =======! Создание ответа !=======
     @classmethod
     def gen_msg(cls, text: str, old_msg: dict):
-        print('90080980*&&&&&&&&&&&&&&&&&&&&&')
+        # print('90080980*&&&&&&&&&&&&&&&&&&&&&')
         aaa = cls.correcting_msg_text(text)
-        print(aaa)
+        # print(aaa)
         return cls.gen_answ_dict(old_msg, aaa, func=lambda i: type(i) != dict)
 
     @classmethod
     def correcting_msg_text(cls, text):
         if not cls.morph:
             cls.morph = cls.MorphAnalyzer()
-        print('correcting_msg_text')
+        # print('correcting_msg_text')
         if type(text) != list:
             if type(text) == str:
                 text = cls.nltk_w_tok(text)
@@ -102,14 +101,14 @@ class BaseClass:
                 text = text.keys()
             else:
                 text = list(text)
-        print('correcting_msg_text ...')
+        # print('correcting_msg_text ...')
         return re_sub(r'(\s{1,})([.,!:;])', r'\2', ' '.join([(word.title() if bool(list(
             filter(lambda p: p.score > cls.prob_thresh and ('Name' in p.tag or 'Sgtm' in p.tag or "Geox" in p.tag),
                    cls.morph.parse(word)))) or ind == 0 else word) for ind, word in enumerate(text)]))
 
     @classmethod
     def gen_answ_dict(cls, _dict: dict, text: str, func=lambda i: True, deep=0):
-        print('gen_answ_dict started')
+        # print('gen_answ_dict started')
         if deep > 2:
             return dict()
         nested_dict = []
@@ -118,7 +117,7 @@ class BaseClass:
         [standart_d.update(cls.gen_answ_dict(_dict[key], '', deep=deep + 1, func=func)) for key in nested_dict]
         if deep == 0:
             standart_d.update({"message": text, 'random_id': randint(1, 2147483647)})
-            print('gen_answ_dict ended')
+            # print('gen_answ_dict ended')
         return standart_d
 
 
