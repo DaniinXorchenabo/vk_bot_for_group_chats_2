@@ -18,6 +18,12 @@ def gen_random_text(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
 def gen_random_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     cls.put_db('content', '/erease', event, queues=queues, pr=0)
 
+
+@VkBase.commands('/stat',  duple=['получить_статистику'], db_acc=(False, 0))
+def gen_stat_for_chat(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
+    cls.put_db('content', '/stat', event, queues=queues, pr=0)
+
+
 if __name__ == '__main__':
     from os import getcwd
     from os.path import split as os_split

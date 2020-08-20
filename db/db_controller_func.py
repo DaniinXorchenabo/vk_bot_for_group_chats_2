@@ -1,21 +1,17 @@
+from db.db_controller import ControlDB
+from db.models import *
+from collections import Counter
+from base.base_libs import *
+
 if __name__ == '__main__':
-    from db.db_controller import ControlDB
-    from db.models import *
     from os import getcwd
     from os.path import split as os_split
     from random import randint
-    from db.models import *
-    from collections import Counter
     from time import ctime
 
     path = os_split(getcwd())
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
-
-from db.db_controller import ControlDB
-from db.models import *
-from collections import Counter
-from base.base_libs import *
 
 
 @ControlDB.command('/new_msg', pr=-1)
@@ -96,7 +92,7 @@ def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
 
 @ControlDB.command('/erease', pr=0)
 @db_session
-def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
+def erease_memoty(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
     id_chat = event['object']['peer_id']
 
     if not Chat.exists(id=id_chat):
@@ -110,4 +106,15 @@ def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
     except Exception as e:
         print('произошла ошибка при очищении памяти чата', id_chat, ":", e)
         ans = 'При очищении память произошла какая-то ошибка👉🏻👈🏻😅'
+    cls.put_send('text', ans, event, queues=queues)
+
+
+@ControlDB.command('/stat', pr=0)
+@db_session
+def get_sts_for_chat(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
+    id_chat = event['object']['peer_id']
+    if not Chat.exists(id=id_chat):
+        Chat(id=id_chat)
+        flush()
+    ans = f'📝 Количество использованных слов: {Chat[id_chat].count_words}\n🔢 ID чата: {id_chat}'
     cls.put_send('text', ans, event, queues=queues)
