@@ -28,8 +28,11 @@ class ProcessingMsg(BaseClass):
         cls.func_for_com[type_ev](cls, type_ev, *args, queues=queues, **kw_cl)
 
     @classmethod
-    def content_type_proc(cls, type_ev, *args, queues=dict(), **kw_cl):
-        cls.func_for_com[type_ev](cls, type_ev, *args, queues=queues, **kw_cl)
+    def content_type_proc(cls, type_ev, data, *args, queues=dict(), **kw_cl):
+        print(type_ev, *data)
+
+        cls.func_for_com[type_ev](cls, type_ev, *data, queues=queues, **kw_cl)
+
 
     # =======! добавление функций обработки в список !=======
     @classmethod

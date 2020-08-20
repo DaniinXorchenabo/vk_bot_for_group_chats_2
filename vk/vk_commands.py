@@ -1,11 +1,15 @@
 from vk.vk_base_class import VkBase
 
 @VkBase.commands('/help', duple=['помощь', "помоги", "/h"])
-def get_text_help_comand(cls, *ar_f, **kw_f):
+def get_text_help_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     if not bool(cls.help_command):
         with open('settings/commands.txt', 'r', encoding='utf-8') as f:
             cls.help_command = f.read()
-    return cls.help_command
+    cls.put_send('text', cls.help_command, event, queues=queues)
+
+@VkBase.commands('/gen')
+def gen_random_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
+    cls.put_db('content', '/gen', event, queues=queues, pr=-2)
 
 if __name__ == '__main__':
     from os import getcwd

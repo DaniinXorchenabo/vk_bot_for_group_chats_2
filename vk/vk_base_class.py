@@ -35,15 +35,6 @@ class VkBase(BaseClass):
     admins = dict()  # {peer_id: seeeion (bool), ...}
     developers = dict()  # {peer_id: seeeion (boop), ...}
 
-    list_keys = ['user_id', "random_id", "peer_id", "domain",
-                 "chat_id", "user_ids", "message", "lat", "long",
-                 "attachment", "reply_to", "forward_messages",
-                 "sticker_id", "group_id", "keyboard", "payload",
-                 "dont_parse_links", "disable_mentions", "intent",
-                 "subscribe_id"]
-
-
-
     # =======! Started !=======
 
     @classmethod

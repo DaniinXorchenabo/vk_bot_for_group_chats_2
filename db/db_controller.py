@@ -21,14 +21,16 @@ class ControlDB(BaseClass):
             # print('************', queue)
             if queue:
                 print('from db class', queue)
-                cls.q_data_proc(*queue)
+                cls.q_data_proc(*queue, queues=queues)
             else:
                 sleep(0.1)
 
     # =======! Processing !=======
     @classmethod
     def content_type_proc(cls, comamnd, *args_q,  queues=dict(), **kwargs_q):
-        print(comamnd, *args_q,  queues, kwargs_q)
+        print('-877&^^%', [comamnd], *args_q,  queues, kwargs_q)
+        print(cls.func_for_com)
+        print('-8*********')
         cls.func_for_com[comamnd](cls, comamnd, *args_q, queues=queues, **kwargs_q)
 
     @classmethod
@@ -37,7 +39,7 @@ class ControlDB(BaseClass):
 
     # =======! Create Decorator !=======
     @classmethod
-    def command(cls, comand):
+    def command(cls, comand, pr=-1):
         def decorator(func):
             def wrapped(*args, **kwargs):
                 return func(cls, *args, **kwargs)

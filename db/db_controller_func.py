@@ -12,11 +12,14 @@ if __name__ == '__main__':
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
 
+
 from db.db_controller import ControlDB
 from db.models import *
 from collections import Counter
+from base.base_libs import *
 
-@ControlDB.command('/new_msg')
+
+@ControlDB.command('/new_msg', pr=-1)
 @db_session
 def db_working_with_new_msg(cls, comamnd, data, id_chat, *args_q, queues=dict(), **kwargs_q):
     # print("работает обработка нового сообщения", id_chat, text_msg, *other)
@@ -36,7 +39,7 @@ def db_working_with_new_msg(cls, comamnd, data, id_chat, *args_q, queues=dict(),
     flush()
 
     min_d, max_d = (start_w, simple_w) if len(start_w) < len(simple_w) else (simple_w, start_w)
-    min_d = {key: (val +  max_d.get(key) if max_d.get(key) else val) for key, val in min_d.items()}
+    min_d = {key: (val + max_d.get(key) if max_d.get(key) else val) for key, val in min_d.items()}
     max_d.update(min_d)
     # print('все новые слова внесены в БД')
     for key, vals in max_d.items():
@@ -52,3 +55,41 @@ def db_working_with_new_msg(cls, comamnd, data, id_chat, *args_q, queues=dict(),
         # print('end pr')
     commit()
     print('end write in DB--------------------------------------')
+
+
+@ControlDB.command('/gen', pr=-2)
+@db_session
+def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
+    id_chat = event['object']['peer_id']
+
+    # print('получение /gen из БД')
+    if Chat.exists(id=id_chat) and Chat[id_chat].count_words > 0:
+        chat_now = Chat[id_chat]
+        max_len = randint(1, 50)
+        ans = []
+        entity = None
+        while True:
+            if max_len < 0 and not entity:
+                break
+            elif max_len >= 0 and not entity:
+                # print(chat_now.start_words)
+                entity = list(chat_now.start_words)[randint(0, len(chat_now.start_words) - 1)]
+                # print(entity)
+                if bool(ans) and ans[-1] not in list('.!?'):
+                    ans.append('.')
+
+            ans.append(entity.word)
+            max_len -= 1
+            if max_len < -500:
+                break
+            # print('*********----')
+            entity = (None if entity.len_vals < 1 else list(entity.val)[randint(0, len(entity.val) - 1)])
+            # print('*********----', entity)
+    else:
+        if not Chat.exists(id=id_chat):
+            Chat(id=id_chat)
+            # flush()
+        ans = 'Я не могу писать, если не знаю слов :c'
+    print('***44434-20-34', cls, hasattr(cls, 'put_proc'))
+    cls.put_proc('content', '/gen', (ans, event), pr=0, queues=queues)
+    print('*______))))))))))))')

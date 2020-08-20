@@ -1,19 +1,34 @@
 from base.base_libs import *
 
 class BaseClass:
+    from pymorphy2 import MorphAnalyzer
+    from nltk import word_tokenize as nltk_w_tok
+    # nltk.download('punkt')
+
     run = False
     kw = dict()
     funk_kw = dict()
+    list_keys = ['user_id', "random_id", "peer_id", "domain",
+                 "chat_id", "user_ids", "message", "lat", "long",
+                 "attachment", "reply_to", "forward_messages",
+                 "sticker_id", "group_id", "keyboard", "payload",
+                 "dont_parse_links", "disable_mentions", "intent",
+                 "subscribe_id"]
+    prob_thresh = 0.4
+    morph = None
 
     # =======! Инициализация !=======
     @classmethod
-    def common_start(cls, queues=dict()):
+    def common_start(cls, queues=dict(), types=[]):
         cls.create_relation_proc(queues)
+        cls.gen_proc_func_from_types(types)
+        cls.morph = cls.MorphAnalyzer()
 
     @classmethod
-    def start(cls, *ar_cl, queues=dict(), **kw_cl):
+    def start(cls, *ar_cl, queues=dict(), types=[], **kw_cl):
         try:
             cls.create_relation_proc(queues)
+            cls.gen_proc_func_from_types(types)
             cls.run = True
             print('child_start starting ')
             cls.child_start(*ar_cl, queues=queues, **kw_cl)
@@ -30,9 +45,6 @@ class BaseClass:
     @classmethod
     def create_relation_proc(cls, queues):
         from itertools import dropwhile, islice
-
-
-        # print(['put_' + key + str(type(q)) for key, q in queues.items() if type(q) == list and not hasattr(BaseClass, 'put_' + key)])  # pr - приоритет)
 
         print('создание очередей без приоритета:', end='\t')
         [(setattr(BaseClass, 'put_' + key,
@@ -55,37 +67,59 @@ class BaseClass:
         print('успешно завершено')
 
     @classmethod
-    def q_data_proc(cls, _type, content, *ar_cl, **kw_cl):
-        if _type == 'func':
-            func, ar_finc, kw_func = content
-            return func(*ar_finc, **kw_func)
-        elif _type == 'ev':
-            cls.event_type_proc(*content, *ar_cl, **kw_cl)
-        elif _type == 'text':
-            # cls.content_type_proc(*content)
-            text, ev_dict = content
-            return text, ev_dict
-        elif _type == 'content':  # обобщенный тип, где content - список, содержащий любое кол-во любых данных
-            cls.content_type_proc(*content, *ar_cl, **kw_cl)
+    def q_data_proc(cls, _type, content, *ar_cl, queues=dict(), **kw_cl):
+        print(hasattr(cls, _type + '_type_proc'))
+        if hasattr(cls, _type + '_type_proc'):
+            print(getattr(cls, _type + '_type_proc'), content)
+            getattr(cls, _type + '_type_proc')(*content, queues=queues, **kw_cl)
 
-    @classmethod  # для переопределения
-    def event_type_proc(cls, type_ev: str, data: dict, func, args_f, kwargs_f, *ar_cl, queues=dict(), **kw_cl):
-        """
+    @classmethod
+    def gen_proc_func_from_types(cls, types):
+        [setattr(cls, str(name_type) + '_type_proc', classmethod(lambda cls, *args, queues=dict(), **kwargs: None))
+         for name_type in types if not hasattr(cls, str(name_type) + '_type_proc')]
 
-        :param type_ev: тип события
-        :param data: словарь с собержанием события
-        :param func:
-        :param args_f: аргументы для вызова func
-        :param kwargs_f: именованные аргументы длявызова func
-        :param ar_cl:
-        :param kw_cl:
-        :return:
-        """
-        pass
 
-    @classmethod  # для переопределения
-    def content_type_proc(cls, *args, **kwargs):
-        pass
+    # =======! Создание ответа !=======
+    @classmethod
+    def gen_msg(cls, text: str, old_msg: dict):
+        print('90080980*&&&&&&&&&&&&&&&&&&&&&')
+        aaa = cls.correcting_msg_text(text)
+        print(aaa)
+        return cls.gen_answ_dict(old_msg, aaa, func=lambda i: type(i) != dict)
+
+    @classmethod
+    def correcting_msg_text(cls, text):
+        if not cls.morph:
+            cls.morph = cls.MorphAnalyzer()
+        print('correcting_msg_text')
+        if type(text) != list:
+            if type(text) == str:
+                text = cls.nltk_w_tok(text)
+            elif type(text) == dict:
+                text = text.keys()
+            else:
+                text = list(text)
+        print('correcting_msg_text ...')
+        return re_sub(r'(\s{1,})([.,!:;])', r'\2', ' '.join([(word.title() if bool(list(
+            filter(lambda p: p.score > cls.prob_thresh and ('Name' in p.tag or 'Sgtm' in p.tag or "Geox" in p.tag),
+                   cls.morph.parse(word)))) or ind == 0 else word) for ind, word in enumerate(text)]))
+
+    @classmethod
+    def gen_answ_dict(cls, _dict: dict, text: str, func=lambda i: True, deep=0):
+        print('gen_answ_dict started')
+        if deep > 2:
+            return dict()
+        nested_dict = []
+        standart_d = {key: val for key, val in _dict.items()
+                      if not (type(val) == dict and nested_dict.append(key)) and key in cls.list_keys and func(val)}
+        [standart_d.update(cls.gen_answ_dict(_dict[key], '', deep=deep + 1, func=func)) for key in nested_dict]
+        if deep == 0:
+            standart_d.update({"message": text, 'random_id': randint(1, 2147483647)})
+            print('gen_answ_dict ended')
+        return standart_d
+
+
+
 
     # # =======! Testing !=======
     # @classmethod

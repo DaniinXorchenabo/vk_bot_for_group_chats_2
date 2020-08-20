@@ -17,12 +17,7 @@ class VkListen(VkBase):
     def listen_events(cls, queues, vip_users, *ar_cl, **kw_cl):
         while cls.run:
             for ev in cls.longpoll.listen():
-                cls.checking_q(queues)
                 cls.processing_event(ev, queues, vip_users)
-
-    @classmethod
-    def checking_q(cls, queues):
-        pass
 
     # =======! Processing event !=======
     @classmethod
@@ -36,6 +31,7 @@ class VkListen(VkBase):
     def processing_new_msg(cls, event, queues, vip_users):
 
         text = event.object.text
+        print(text)
         cl_com, text_find = (0, text) if len(text.split()) < 2 else (1, text.split()[0])
 
         # если команда специальная, проверяем: ксть ли у пользователя соответствующий доступ
@@ -51,7 +47,7 @@ class VkListen(VkBase):
         print('-===========')
         # проверяем, может команда не требует доступа к БД
         if text_find in cls.DBless_com[cl_com]:
-            cls.put_send('text', cls.func_for_com[text_find](cls), event.raw, queues=queues)
+            cls.func_for_com[text_find](cls, event=event.raw, queues=queues)
             return
 
         # если запрос нужно отправить сначала в обработку, то отправляем. В противном случае отправляем в БД
@@ -59,10 +55,10 @@ class VkListen(VkBase):
                             (cls.prior_com_db, cls.put_db)]:
             com, pr = next(cls.islice(((commands_p, ind) for ind, commands_p in enumerate(arr + [None])
                                        if not commands_p or text_find in commands_p[cl_com]), 1))
-            print(com, pr)
+            print('com, pr', com, pr)
             if com:  # com = None or list
-                q_func('ev', cls.find_main_com[text_find], event.raw,
-                       cls.func_for_com[text_find], [], {}, pr=pr, queues=queues)
+                code_comand = cls.find_main_com[text_find](cls)
+                cls.func_for_com[text_find](cls, code_comand, event.raw, pr=pr, queues=queues)
                 return
         peer_id = event.object.peer_id
         cls.put_proc('content', "/new_msg", text, peer_id, pr=-1, queues=queues)
