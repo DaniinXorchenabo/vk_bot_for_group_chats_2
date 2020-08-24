@@ -25,10 +25,11 @@ if __name__ == '__main__':
     #   type='text':   очередь = [('text', (text: str, data: dict)), ...]  data - словарь из пришедшего сообщения
     #   text='???':     очередь = [('content', (type:str, (data): str, peer_id:int, )), ...]
     #   type='cooking_msg'      = [('cooking_msg', msg: dict), ...]
+    #   type='change_param'      = [('change_param', peer_id, text, data: dict), ...] data - словарь с обновленными параметрами
     #       proc - для отправки в класс обработки сообщений
     #       db - для отправки в класс базы данных
     #       type_ev = [new_msg - новое сообщение]
-    types = ['func', "ev", "text", 'content', 'cooking_msg']
+    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param']
     chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}]
     chains_mps = {(i if type(i) != dict else list(i.keys())[0]): (
         Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])

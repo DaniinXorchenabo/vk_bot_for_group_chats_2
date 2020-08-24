@@ -18,6 +18,7 @@ class VkSending(VkBase):
     def working(cls, queues, users, *ar_cl, **kw_cl):
         while cls.run:
             if not queues['send'].empty():
+                print('-----------------------')
                 cls.q_data_proc(*queues['send'].get())
                 # if data and bool(data):
                 #     if type(data) == list and len(data) == 2:
@@ -38,12 +39,24 @@ class VkSending(VkBase):
     def text_type_proc(cls, text, last_msg, *args, queues=dict(), **kwargs):
         cls.gen_and_send_msg(text, last_msg)
 
-    # =======! Processing !=======
+    @classmethod
+    def change_param_type_proc(cls, peer_id: int, text: str, data: dict, queues=dict(), **kwargs):
+        print('----')
+        if not cls.obj_dict.get(peer_id):
+            cls(peer_id)
+        cls.obj_dict[peer_id].__dict__.update(data)
+        cls.gen_and_send_msg(text, {'peer_id': peer_id})
+        print('-00((((((((')
+
+    # =======! Processing !п=======
     @classmethod
     def add_peculiar_properties(cls, old_msg):
-        if old_msg.get('peer_id', None) and cls.obj_dict.get(old_msg.get('peer_id')):
+        if old_msg.get('peer_id') and not cls.obj_dict.get(old_msg.get('peer_id')):
+            cls(old_msg['peer_id'])
+        if old_msg.get('peer_id'):
             # характеристики сообщений чата, присущие только ему (к примеру, клавиатура)
-            old_msg.update(cls.obj_dict[old_msg['peer_id']].own_dict)
+            old_msg.update(cls.obj_dict[old_msg['peer_id']].__dict__)
+
         return old_msg
 
     # =======! Sending !=======
@@ -54,6 +67,13 @@ class VkSending(VkBase):
     @classmethod
     def send_msg(cls, msg: dict):
         cls.vk_session.method("messages.send", cls.add_peculiar_properties(msg))
+
+    # =======! Работа с объектом чата !=======
+    def __init__(self, chat_id, kw=None):
+        if not VkSending.obj_dict.get(chat_id):
+            VkSending.obj_dict[chat_id] = self
+        self.peer_id = chat_id
+        self.keyboard = kw
 
 
 if __name__ == '__main__':

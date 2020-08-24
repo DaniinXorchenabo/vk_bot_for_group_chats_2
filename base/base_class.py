@@ -78,7 +78,7 @@ class BaseClass:
 
     @classmethod
     def gen_proc_func_from_types(cls, types):
-        [setattr(cls, str(name_type) + '_type_proc', classmethod(lambda cls, *args, queues=dict(), **kwargs: None))
+        [setattr(cls, str(name_type) + '_type_proc', classmethod(lambda cls, *args, queues=dict(), **kwargs: print(str(name_type) + '_type_proc started')))
          for name_type in types if not hasattr(cls, str(name_type) + '_type_proc')]
 
     # =======! Создание ответа !=======

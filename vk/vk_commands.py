@@ -1,4 +1,5 @@
 from vk.vk_base_class import VkBase
+from vk.vk_buttons import *
 from random import randint
 
 @VkBase.commands('/help', duple=['помощь', "помоги", "/h"])
@@ -33,6 +34,13 @@ def get_answer_for_your_question(cls, *ar_f, event=dict(), queues=dict(), **kw_f
                'Что?', 'Ты пятый раз это спрашиваешь!']
     ans = ANSWERS[randint(0, len(ANSWERS)-1)]
     cls.put_send('text', ans, event, queues=queues)
+
+@VkBase.commands('/set_keyword',  duple=['Установить клавиатуру', '/kw', "/keyword"], db_acc=False)
+def set_standart_kw(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
+    id_chat = event['object']['peer_id']
+
+    cls.put_send('change_param', id_chat, "Клавиатура установлена", {"keyboard": standart_kw_cl.get_dict()},  queues=queues)
+    print(standart_kw_cl.get_dict())
 
 
 if __name__ == '__main__':

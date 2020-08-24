@@ -31,13 +31,13 @@ def create_button(label, color, payload=''):
 
 
 class VkButton():
-    colors = {'pr': 'primary ', 's': 'secondary ', 'n': 'negative', 'p': 'positive'}
+    colors = {'pr': 'primary', 's': 'secondary', 'n': 'negative', 'p': 'positive'}
 
     def __init__(self, lable='', color='pr', _type='text', payload=''):
         """
 
         :param lable: текст кнопки
-        :param color: цвет кнопки [primary, s, n, p]
+        :param color: цвет кнопки [pr, s, n, p]
         :param type: ["text", 'open_link', 'Location', 'callback']
         :param payload: при нажатии кнопки вернется строка с указанным содержимым
         """
@@ -82,13 +82,16 @@ class KeyBoard():
         self.rows.extend(rows)
 
     def get_dict(self):
-        return {"one_time": self.one_time,
+        struct = {"one_time": self.one_time,
                 "buttons": [[button.get_dict() for button in row] for row in self.rows],
                 "inline": self.inline
                 }
+        if self.inline:
+            del struct['one_time']
+        return json.dumps(struct, ensure_ascii=False).encode('utf-8')
 
 
 row1 = RowForKeyBoard('помощь', 'расшифровка')
 row2 = RowForKeyBoard('/gen', '/er', '/st')
 row3 = RowForKeyBoard('/n_kw', '/kw')
-standart_kw_cl = KeyBoard(row1, row2, row3)
+standart_kw_cl = KeyBoard(row1, row2, row3, one_time=False)
