@@ -56,7 +56,7 @@ def db_working_with_new_msg(cls, comamnd, data, id_chat, *args_q, queues=dict(),
 @db_session
 def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
     id_chat = event['object']['peer_id']
-    # print([i for i in Admins.select()])
+    print([i for i in Admins.select()])
     # print('получение /gen из БД')
     if Chat.exists(id=id_chat) and Chat[id_chat].count_words > 0:
         chat_now = Chat[id_chat]
@@ -133,3 +133,12 @@ def get_admins(cls, *args_q, queues=dict(), **kwargs_q):
     developers = [dev.id for dev in Developers.select()]
     # print("@ControlDB.command('/get_admins', pr=0)", developers)
     cls.put_send('inner_info', 'set_developers', developers, queues=queues)
+
+@ControlDB.command('/add_admin', pr=0)
+@db_session
+def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
+    print('---------------', [peer_id])
+    if not Admins.exists(id=int(peer_id)):
+        Admins(id=int(peer_id))
+        commit()
+    print(peer_id)

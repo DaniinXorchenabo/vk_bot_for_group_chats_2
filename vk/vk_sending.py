@@ -2,15 +2,12 @@ from vk.vk_base_class import *
 
 
 class VkSending(VkBase):
-    admin_pas = dev_pas = None  # пароли админа и разработчика
     obj_dict = dict()  # dict(id_chat: VkBotSending)
 
     # =======! Starting !=======
     @classmethod
     def child_start(cls, *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
         super().child_start(*ar_cl, queues=queues, vip_users=vip_users, **kw_cl)
-        cls.admin_pas = cfg.get("passwords", "admin")
-        cls.dev_pas = cfg.get("passwords", "developer")
         cls.working(queues, vip_users, *ar_cl, **kw_cl)
 
     # =======! Working !=======

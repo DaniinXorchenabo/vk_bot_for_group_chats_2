@@ -5,12 +5,13 @@ class VkListen(VkBase):
     from itertools import islice
     longpoll = None
 
+
     # =======! Starting !=======
     @classmethod
     def child_start(cls, *ar_cl, queues=dict(), vip_users=dict(), **kw_cl):
         super().child_start(*ar_cl, queues=queues, vip_users=vip_users, **kw_cl)
         cls.longpoll = VkBotLongPoll(cls.vk_session, group_id=cfg.get("vk", "group"))
-        print()
+        # print()
         cls.listen_events(queues, vip_users)
 
     # =======! Working !=======
@@ -42,17 +43,17 @@ class VkListen(VkBase):
         # если команда специальная, проверяем: ксть ли у пользователя соответствующий доступ
         if text_find in cls.admin_com and not cls.admins.get(event.object.peer_id, None):
             cls.put_send('text', '''вы не админ, поэтому не можете использовать данную команду.
-             Если это не так, то попробуйте ввести: /login''', event.raw, queues=queues)
+             Если это не так, то попробуйте ввести: /log_in''', event.raw, queues=queues)
             return
         if text_find in cls.developer_com and not cls.developers.get(event.object.peer_id, None):
             cls.put_send('text', '''вы не разработчик, поэтому не можете использовать данную команду.
-             Если это не так, то попробуйте ввести: /login_dev''', event.raw, queues=queues)
+             Если это не так, то попробуйте ввести: /log_in_dev''', event.raw, queues=queues)
             return
 
         print('-===========')
         # проверяем, может команда не требует доступа к БД
         if text_find in cls.DBless_com[cl_com]:
-            cls.func_for_com[text_find](cls, event=event.raw, queues=queues)
+            cls.func_for_com[text_find](cls, event=event.raw, queues=queues, vip_users=vip_users)
             return
 
         # если запрос нужно отправить сначала в обработку, то отправляем. В противном случае отправляем в БД
@@ -65,7 +66,7 @@ class VkListen(VkBase):
                 print(cls.find_main_com, text_find)
                 code_comand = cls.find_main_com[text_find]
                 print('*******')
-                cls.func_for_com[code_comand](cls, code_comand, event=event.raw, pr=pr, queues=queues)
+                cls.func_for_com[code_comand](cls, code_comand, event=event.raw, pr=pr, queues=queues, vip_users=vip_users)
                 return
 
         # если команда все еще не распознана, то проверяем,
@@ -73,7 +74,8 @@ class VkListen(VkBase):
         func, (name_com, func_proc) = next(((key_f, val) for key_f, val in list(cls.rec_com.items()) + [
             (lambda i: True, (None, None))] if key_f(text)))
         if name_com:
-            func_proc(cls, name_com, event=event.raw, queues=queues)
+            print(vip_users)
+            func_proc(cls, name_com, event=event.raw, queues=queues, vip_users=vip_users)
             return
 
         # если команда не распознана, то отправляем текста сообщения для составления цепей Маркова
