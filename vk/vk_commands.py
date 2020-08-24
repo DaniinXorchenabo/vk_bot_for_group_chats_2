@@ -40,8 +40,13 @@ def set_standart_kw(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     id_chat = event['object']['peer_id']
 
     cls.put_send('change_param', id_chat, "Клавиатура установлена", {"keyboard": standart_kw_cl.get_dict()},  queues=queues)
-    print(standart_kw_cl.get_dict())
+    # print(standart_kw_cl.get_dict())
 
+@VkBase.commands('/del_keyword',  duple=['Убрать клавиатуру', '/n_kw', "/no_keyword"], db_acc=False)
+def set_standart_kw(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
+    id_chat = event['object']['peer_id']
+    cls.put_send('change_param', id_chat, "Клавиатура убрана", {"keyboard": del_keyboard.get_dict()},  queues=queues)
+    # print(standart_kw_cl.get_dict())
 
 if __name__ == '__main__':
     from os import getcwd
