@@ -142,3 +142,12 @@ def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
         Admins(id=int(peer_id))
         commit()
     print(peer_id)
+
+@ControlDB.command('/add_developer', pr=0)
+@db_session
+def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
+    print('---------------', [peer_id])
+    if not Developers.exists(id=int(peer_id)):
+        Developers(id=int(peer_id))
+        commit()
+    print(peer_id)

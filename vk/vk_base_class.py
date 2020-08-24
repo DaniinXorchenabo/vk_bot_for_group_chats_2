@@ -39,7 +39,8 @@ class VkBase(BaseClass):
     help_command = ''
     admins = dict()  # {peer_id: seeeion (bool), ...}
     developers = dict()  # {peer_id: seeeion (boop), ...}
-    admin_pas = dev_pas = None  # пароли админа и разработчика
+    admin_pas = None
+    developer_pas = None  # пароли админа и разработчика
 
 
     # =======! Started !=======
@@ -58,7 +59,8 @@ class VkBase(BaseClass):
         cls.vk_session = VkApi(token=cfg.get("vk", "token"))
         cls.all_commands += list(cls.func_for_com.keys())
         cls.admin_pas = cfg.get("passwords", "admin")
-        cls.dev_pas = cfg.get("passwords", "developer")
+        cls.developer_pas = cfg.get("passwords", "developer")
+        # print('*********&&&&&', cls.developer_pas)
 
     @classmethod
     def child_start(cls, *ar_cl, queues=dict(), users=dict(), **kw_cl):

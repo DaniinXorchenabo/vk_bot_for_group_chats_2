@@ -43,11 +43,11 @@ class VkListen(VkBase):
         # если команда специальная, проверяем: ксть ли у пользователя соответствующий доступ
         if text_find in cls.admin_com and not cls.admins.get(event.object.peer_id, None):
             cls.put_send('text', '''вы не админ, поэтому не можете использовать данную команду.
-             Если это не так, то попробуйте ввести: /log_in''', event.raw, queues=queues)
+             Если это не так, то попробуйте ввести: /sign_in''', event.raw, queues=queues)
             return
         if text_find in cls.developer_com and not cls.developers.get(event.object.peer_id, None):
             cls.put_send('text', '''вы не разработчик, поэтому не можете использовать данную команду.
-             Если это не так, то попробуйте ввести: /log_in_dev''', event.raw, queues=queues)
+             Если это не так, то попробуйте ввести: /sign_in_dev''', event.raw, queues=queues)
             return
 
         print('-===========')

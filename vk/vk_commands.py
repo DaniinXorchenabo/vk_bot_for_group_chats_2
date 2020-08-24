@@ -52,23 +52,26 @@ def set_standart_kw(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     cls.put_send('change_param', id_chat, "Клавиатура убрана", {"keyboard": del_keyboard.get_dict()}, queues=queues)
     # print(standart_kw_cl.get_dict())
 
+
 @VkBase.commands('/log_in', it_is_part=1, db_acc=(False, 0))
-def admin_log_in(cls, *ar_f, event=dict(), queues=dict(),
-                 vip_users=dict(),
+def admin_log_in(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(),
                  ans1='нельзя войти в админку, если вы уже в админке)',
                  ans2='Вы уже администратор, чтобы использовать все команды, доступные вам, введите "/sign_in"',
                  ans3='Поздравляю! Теперь вы администратор!',
-                 **kw_f):
+                 who='admin', password=None, **kw_f):
+    if not password:
+        password = cls.admin_pas
     all_text = (event['object']['text'].split() + [''])[1]
     peer_id = event['object']['peer_id']
     print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
-    if peer_id in vip_users['admins']:
-        ans = ans1 if vip_users['admins'][peer_id] else ans2
+    if peer_id in vip_users[f'{who}s']:
+        ans = ans1 if vip_users[f'{who}s'][peer_id] else ans2
         cls.put_send('text', ans, event, queues=queues)
         return
-    if all_text == cls.admin_pas:
-        vip_users['admins'][peer_id] = True
-        cls.put_db('content', '/add_admin', peer_id, queues=queues, pr=0)
+    # print(f'{who}_pas', getattr(cls, f'{who}_pas'))
+    if all_text == password:
+        vip_users[f'{who}s'][peer_id] = True
+        cls.put_db('content', f'/add_{who}', peer_id, queues=queues, pr=0)
         cls.put_send('text', ans3, event, queues=queues)
     else:
         if bool(all_text):
@@ -76,9 +79,21 @@ def admin_log_in(cls, *ar_f, event=dict(), queues=dict(),
             cls.put_send('text', ans, event, queues=queues)
 
 
+@VkBase.commands('/dev_log_in', it_is_part=1, db_acc=(False, 0))
+def developer_log_in(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    admin_log_in(cls, *ar_f, event=event, queues=queues, vip_users=vip_users,
+                 ans1='нельзя стать разработчиком если вы уже разработчик)',
+                 ans2='Вы уже разработчик, чтобы использовать все команды, доступные вам, введите "/dev_sign_in"',
+                 ans3='Поздравляю! Теперь вы разработчик!',
+                 who='developer', password=cls.developer_pas, **kw_f)
 
 
+@VkBase.commands('/sign_in ', it_is_part=1, db_acc=(False, 0))
+def sign_in_admin(): pass
 
+
+@VkBase.commands('/dev_sign_in', it_is_part=1, db_acc=(False, 0))
+def sign_in_developer(): pass
 
 
 if __name__ == '__main__':
