@@ -6,6 +6,7 @@ from re import (
 from random import randint
 from functools import wraps
 
+
 if __name__ == '__main__':
     from os import getcwd
     from os.path import split as os_split

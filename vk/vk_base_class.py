@@ -6,6 +6,7 @@ from vk_api.bot_longpoll import (
     VkBotEvent,
     VkBotEventType
 )
+from vk.vk_buttons import *
 
 
 class VkBase(BaseClass):

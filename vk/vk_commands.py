@@ -19,9 +19,10 @@ def gen_random_comand(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     cls.put_db('content', '/erease', event, queues=queues, pr=0)
 
 
-@VkBase.commands('/stat',  duple=['получить_статистику'], db_acc=(False, 0))
+@VkBase.commands('/stat',  duple=['получить_статистику', '/st'], db_acc=(False, 0))
 def gen_stat_for_chat(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
     cls.put_db('content', '/stat', event, queues=queues, pr=0)
+
 
 @VkBase.commands('/get_ans_from_bot', rec_f=[lambda text: text[:4].lower() == 'бот,' and text[-1] == '?'])
 def get_answer_for_your_question(cls, *ar_f, event=dict(), queues=dict(), **kw_f):
@@ -32,6 +33,7 @@ def get_answer_for_your_question(cls, *ar_f, event=dict(), queues=dict(), **kw_f
                'Что?', 'Ты пятый раз это спрашиваешь!']
     ans = ANSWERS[randint(0, len(ANSWERS)-1)]
     cls.put_send('text', ans, event, queues=queues)
+
 
 if __name__ == '__main__':
     from os import getcwd
