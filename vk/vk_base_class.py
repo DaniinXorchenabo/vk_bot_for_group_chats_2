@@ -141,7 +141,7 @@ class VkBase(BaseClass):
         max_len = (-pr - 1 if pr < 0 else pr)
         if len(prior_com) <= max_len:
             prior_com += [[[] for i in range(2)] for _ in range(max_len - len(prior_com) + 1)]
-        print('----------------', *prior_com, '-----------------', sep='\n')
+        # print('----------------', *prior_com, '-----------------', sep='\n')
         prior_com[pr][it_is_part] += (elements if type(elements) == list else [elements])
         return prior_com
 

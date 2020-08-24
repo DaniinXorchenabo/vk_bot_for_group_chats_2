@@ -8,9 +8,15 @@ class ControlDB(BaseClass):
 
     # =======! Started !=======
     @classmethod
+    @db_session
     def child_start(cls, *ar_cl, queues=dict(), **kw_cl):
-        print('-0-0---0')
+        # Admins(id=100)
+        # Admins(id=101)
+        # commit()
+        cls.put_db('content', '/get_admins', 'useless data', queues=queues, pr=0)
+        cls.put_db('content', '/get_developers', 'useless data', queues=queues, pr=0)
         cls.working(*ar_cl, queues=queues, **kw_cl)
+
 
     # =======! Working !=======
     @classmethod

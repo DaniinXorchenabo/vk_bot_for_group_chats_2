@@ -56,7 +56,7 @@ def db_working_with_new_msg(cls, comamnd, data, id_chat, *args_q, queues=dict(),
 @db_session
 def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
     id_chat = event['object']['peer_id']
-
+    # print([i for i in Admins.select()])
     # print('получение /gen из БД')
     if Chat.exists(id=id_chat) and Chat[id_chat].count_words > 0:
         chat_now = Chat[id_chat]
@@ -118,3 +118,18 @@ def get_sts_for_chat(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
         flush()
     ans = f'📝 Количество использованных слов: {Chat[id_chat].count_words}\n🔢 ID чата: {id_chat}'
     cls.put_send('text', ans, event, queues=queues)
+
+
+@ControlDB.command('/get_admins', pr=0)
+@db_session
+def get_admins(cls, *args_q, queues=dict(), **kwargs_q):
+    admins = [adm.id for adm in Admins.select()]
+    print("@ControlDB.command('/get_admins', pr=0)", admins)
+    cls.put_send('inner_info', 'set_admins', admins, queues=queues)
+
+@ControlDB.command('/get_developers', pr=0)
+@db_session
+def get_admins(cls, *args_q, queues=dict(), **kwargs_q):
+    developers = [dev.id for dev in Developers.select()]
+    # print("@ControlDB.command('/get_admins', pr=0)", developers)
+    cls.put_send('inner_info', 'set_developers', developers, queues=queues)

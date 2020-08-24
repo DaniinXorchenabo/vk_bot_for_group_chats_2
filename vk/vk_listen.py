@@ -18,7 +18,11 @@ class VkListen(VkBase):
     def listen_events(cls, queues, vip_users, *ar_cl, **kw_cl):
         while cls.run:
             for ev in cls.longpoll.listen():
+                print(vip_users)
+                print(*[(i, d) for i, d in vip_users.items()], sep='\n')  # [(key, val) for key, val in d.items()]
+                print(*[[(key, val) for key, val in d.items()] for i, d in vip_users.items()], sep='\n')  #
                 cls.processing_event(ev, queues, vip_users)
+
 
     # =======! Processing event !=======
     @classmethod

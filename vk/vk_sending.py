@@ -15,11 +15,11 @@ class VkSending(VkBase):
 
     # =======! Working !=======
     @classmethod
-    def working(cls, queues, users, *ar_cl, **kw_cl):
+    def working(cls, queues, vip_users, *ar_cl, **kw_cl):
         while cls.run:
             if not queues['send'].empty():
                 print('-----------------------')
-                cls.q_data_proc(*queues['send'].get())
+                cls.q_data_proc(*queues['send'].get(), vip_users=vip_users, queues=queues)
                 # if data and bool(data):
                 #     if type(data) == list and len(data) == 2:
                 #         cls.gen_and_send_msg(*data)
@@ -41,14 +41,22 @@ class VkSending(VkBase):
 
     @classmethod
     def change_param_type_proc(cls, peer_id: int, text: str, data: dict, queues=dict(), **kwargs):
-        print('----')
+        # print('----')
         if not cls.obj_dict.get(peer_id):
             cls(peer_id)
         cls.obj_dict[peer_id].__dict__.update(data)
         cls.gen_and_send_msg(text, {'peer_id': peer_id})
-        print('-00((((((((')
+        # print('-00((((((((')
 
-    # =======! Processing !п=======
+    @classmethod
+    def inner_info_type_proc(cls, _type, data, queues=dict(), vip_users=dict(), **kwargs):
+        print('03333333333333322222222222222-------------------------------')
+        if _type == 'set_admins':
+            vip_users['admins'].update({i: False for i in data})
+        elif _type == 'set_developers':
+            vip_users['developers'].update({i: False for i in data})
+
+    # =======! Processing !=======
     @classmethod
     def add_peculiar_properties(cls, old_msg):
         if old_msg.get('peer_id') and not cls.obj_dict.get(old_msg.get('peer_id')):
