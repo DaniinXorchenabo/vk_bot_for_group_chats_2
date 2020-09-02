@@ -15,7 +15,7 @@ class VkSending(VkBase):
     def working(cls, queues, vip_users, *ar_cl, **kw_cl):
         while cls.run:
             if not queues['send'].empty():
-                print('-----------------------')
+                # print('-----------------------')
                 cls.q_data_proc(*queues['send'].get(), vip_users=vip_users, queues=queues)
                 # if data and bool(data):
                 #     if type(data) == list and len(data) == 2:
@@ -47,7 +47,7 @@ class VkSending(VkBase):
 
     @classmethod
     def inner_info_type_proc(cls, _type, data, queues=dict(), vip_users=dict(), **kwargs):
-        print('03333333333333322222222222222-------------------------------')
+        # print('03333333333333322222222222222-------------------------------')
         if _type == 'set_admins':
             vip_users['admins'].update({i: False for i in data})
         elif _type == 'set_developers':

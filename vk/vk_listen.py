@@ -19,9 +19,9 @@ class VkListen(VkBase):
     def listen_events(cls, queues, vip_users, *ar_cl, **kw_cl):
         while cls.run:
             for ev in cls.longpoll.listen():
-                print(vip_users)
-                print(*[(i, d) for i, d in vip_users.items()], sep='\n')  # [(key, val) for key, val in d.items()]
-                print(*[[(key, val) for key, val in d.items()] for i, d in vip_users.items()], sep='\n')  #
+                # print(vip_users)
+                # print(*[(i, d) for i, d in vip_users.items()], sep='\n')  # [(key, val) for key, val in d.items()]
+                # print(*[[(key, val) for key, val in d.items()] for i, d in vip_users.items()], sep='\n')  #
                 cls.processing_event(ev, queues, vip_users)
 
 
@@ -35,24 +35,25 @@ class VkListen(VkBase):
 
     @classmethod
     def processing_new_msg(cls, event, queues, vip_users):
-
+        print('vip_users:', {key: {(k, v) for k, v in val.items()} for key, val in vip_users.items()})
         text = event.object.text
-        print(text)
+        # print(text)
         cl_com, text_find = (0, text) if len(text.split()) < 2 else (1, text.split()[0])
 
         # если команда специальная, проверяем: ксть ли у пользователя соответствующий доступ
-        if text_find in cls.admin_com and not cls.admins.get(event.object.peer_id, None):
+        if text_find in cls.admins_com and event.object.peer_id not in vip_users['admins']:
             cls.put_send('text', '''вы не админ, поэтому не можете использовать данную команду.
              Если это не так, то попробуйте ввести: /sign_in''', event.raw, queues=queues)
             return
-        if text_find in cls.developer_com and not cls.developers.get(event.object.peer_id, None):
+        if text_find in cls.developers_com and event.object.peer_id not in vip_users['developers']:
             cls.put_send('text', '''вы не разработчик, поэтому не можете использовать данную команду.
-             Если это не так, то попробуйте ввести: /sign_in_dev''', event.raw, queues=queues)
+             Если это не так, то попробуйте ввести: /dev_sign_in''', event.raw, queues=queues)
             return
-
-        print('-===========')
+        #
+        # print('-===========')
         # проверяем, может команда не требует доступа к БД
         if text_find in cls.DBless_com[cl_com]:
+            print('---------------------')
             cls.func_for_com[text_find](cls, event=event.raw, queues=queues, vip_users=vip_users)
             return
 
@@ -61,11 +62,11 @@ class VkListen(VkBase):
             com, pr = next(cls.islice((((text_find if commands_p else None), ind)
                                        for ind, commands_p in enumerate(arr + [None])
                                        if not commands_p or text_find in commands_p[cl_com]), 1))
-            print('com, pr', com, pr)
+            # print('com, pr', com, pr)
             if com:  # com = None or list
                 print(cls.find_main_com, text_find)
                 code_comand = cls.find_main_com[text_find]
-                print('*******')
+                # print('*******')
                 cls.func_for_com[code_comand](cls, code_comand, event=event.raw, pr=pr, queues=queues, vip_users=vip_users)
                 return
 
@@ -74,7 +75,7 @@ class VkListen(VkBase):
         func, (name_com, func_proc) = next(((key_f, val) for key_f, val in list(cls.rec_com.items()) + [
             (lambda i: True, (None, None))] if key_f(text)))
         if name_com:
-            print(vip_users)
+            # print(vip_users)
             func_proc(cls, name_com, event=event.raw, queues=queues, vip_users=vip_users)
             return
 

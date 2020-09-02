@@ -88,12 +88,21 @@ def developer_log_in(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), 
                  who='developer', password=cls.developer_pas, **kw_f)
 
 
-@VkBase.commands('/sign_in ', it_is_part=1, db_acc=(False, 0))
-def sign_in_admin(): pass
+@VkBase.commands('/sign_in', adm_com=True)  #
+def sign_in_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='администратор', **kw_f):
+    peer_id = event['object']['peer_id']
+    if peer_id in vip_users[f'{who}s']:
+        if vip_users[f'{who}s'].get(peer_id):
+            ans = 'Вы уже ' + who + ", вам уже доступны команды " + who2 + 'а'
+        else:
+            vip_users[f'{who}s'][peer_id] = True
+            ans = 'Вы вошли как ' + who + ', теперь вам доступны команды ' + who2 + 'а'
+        cls.put_send('text', ans, event, queues=queues)
 
 
-@VkBase.commands('/dev_sign_in', it_is_part=1, db_acc=(False, 0))
-def sign_in_developer(): pass
+@VkBase.commands('/dev_sign_in', dev_com=True)
+def sign_in_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    sign_in_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
 
 
 if __name__ == '__main__':

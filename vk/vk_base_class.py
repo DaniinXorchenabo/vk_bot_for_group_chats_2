@@ -34,11 +34,11 @@ class VkBase(BaseClass):
     ]
     prior_com_db[приоритетность команды][0 - если просто команда; 1 - если команда с аргументами]
     """
-    admin_com = []  # команды, доступные только из админки
-    developer_com = []  # команды, доступные только для разработчика
+    admins_com = []  # команды, доступные только из админки
+    developers_com = []  # команды, доступные только для разработчика
     help_command = ''
-    admins = dict()  # {peer_id: seeeion (bool), ...}
-    developers = dict()  # {peer_id: seeeion (boop), ...}
+    # admins = dict()  # {peer_id: seeeion (bool), ...}
+    # developers = dict()  # {peer_id: seeeion (boop), ...}
     admin_pas = None
     developer_pas = None  # пароли админа и разработчика
 
@@ -69,7 +69,10 @@ class VkBase(BaseClass):
 
     # =======! msg processing !=======
     @classmethod
-    def commands(cls, com_name: str, *args, duple: list = [], it_is_part=0, rec_f: list = [], db_acc=False, **kwargs):
+    def commands(cls, com_name: str, *args, duple: list = [],
+                 it_is_part=0, rec_f: list = [],
+                 adm_com=False, dev_com=False,
+                 db_acc=False, **kwargs):
         """
         :param com_name: стандартное обозначение команды
         :param args: остальные параметры
@@ -85,6 +88,8 @@ class VkBase(BaseClass):
                                             True - дальше передаем запрос в БД
                         (None, num2: int)   Передаем запрос сначала в БД, потом в обработку по процессам
                                             num2 - приоритет при отправке в БД
+        :param admin_com: True для команды, доступной только админу
+        :param dev_com: True для команды, доступной только разработчику
         **********************************************************************************************************
         если вы подаете db_acc = (False, number: int), то необходимо обязательно прописать
         @ControlDB.command(com_name, pr) в db/db_controller_func.py, чтобы прописать обработчик команды,
@@ -136,6 +141,10 @@ class VkBase(BaseClass):
                                                                    it_is_part, cls.prior_com_proc)
             else:
                 cls.DBless_com[it_is_part] += [com_name] + duple
+            if adm_com:
+                cls.admins_com.append(com_name)
+            if dev_com:
+                cls.developers_com.append(com_name)
             # print('_____________________________++++++++')
             return wrapped
 
