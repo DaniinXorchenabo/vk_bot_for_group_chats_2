@@ -104,6 +104,22 @@ def sign_in_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who
 def sign_in_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     sign_in_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
 
+@VkBase.commands('/sign_out', adm_com=True)
+def sign_out_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='администратор', **kw_f):
+    peer_id = event['object']['peer_id']
+    if peer_id in vip_users[f'{who}s']:
+        if vip_users[f'{who}s'].get(peer_id):
+            ans = 'Вы вышли из сессии ' + who2 + 'а'
+            vip_users[f'{who}s'][peer_id] = False
+        else:
+            ans = 'нельзя выйти из сессии ' + who2 + 'а, если вы еще не ' + who2 + ')))'
+        cls.put_send('text', ans, event, queues=queues)
+
+
+@VkBase.commands('/dev_sign_out', dev_com=True)
+def sign_out_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    sign_in_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
+
 
 if __name__ == '__main__':
     from os import getcwd
