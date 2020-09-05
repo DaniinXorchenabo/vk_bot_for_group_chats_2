@@ -121,6 +121,19 @@ def sign_out_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict()
     sign_in_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
 
 
+@VkBase.commands('/stat_me')
+def det_users_info(cls, *ar_f, event=dict(), queues=dict(), vp=dict(), **kw_f):
+    peer_id = event['object']['peer_id']
+    ans = ''
+    for name, _dict in vp.items():
+        if peer_id in _dict:
+            ans += 'вы - ' + name + '\n'
+            ans += ('вы находитесь в сессии' if _dict[peer_id] else
+                    'но сейчас вым доступны только команды обычного пользователя') + '\n'
+    if not bool(ans):
+        ans = 'вы обладаете правами обычного пользователя'
+    cls.put_send('text', ans, event, queues=queues)
+
 if __name__ == '__main__':
     from os import getcwd
     from os.path import split as os_split
