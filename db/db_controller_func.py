@@ -137,17 +137,36 @@ def get_admins(cls, *args_q, queues=dict(), **kwargs_q):
 @ControlDB.command('/add_admin', pr=0)
 @db_session
 def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
-    print('---------------', [peer_id])
+    # print('---------------', [peer_id])
     if not Admins.exists(id=int(peer_id)):
         Admins(id=int(peer_id))
         commit()
-    print(peer_id)
+    # print(peer_id)
 
 @ControlDB.command('/add_developer', pr=0)
 @db_session
 def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
-    print('---------------', [peer_id])
+    # print('---------------', [peer_id])
     if not Developers.exists(id=int(peer_id)):
         Developers(id=int(peer_id))
         commit()
-    print(peer_id)
+    # print(peer_id)
+
+@ControlDB.command('/del_me', pr=0)
+@db_session
+def del_me_admin(cls, command, data: dict,  peer_id, *args_q, queues=dict(), **kwargs_q):
+    if Admins.exists(id=int(peer_id)):
+        Admins[peer_id].delete()
+        commit()
+    cls.put_db('content', '/get_admins', 'useless data', queues=queues, pr=0)
+    cls.put_send('text', 'теперь вы больше не администратор', data, queues=queues)
+
+
+@ControlDB.command('/dev_del_me', pr=0)
+@db_session
+def del_me_admin(cls, command, data: dict,  peer_id, *args_q, queues=dict(), **kwargs_q):
+    if Developers.exists(id=int(peer_id)):
+        Developers[peer_id].delete()
+        commit()
+    cls.put_db('content', '/get_developers', 'useless data', queues=queues, pr=0)
+    cls.put_send('text', 'вы удалены из разработчиков', data, queues=queues)

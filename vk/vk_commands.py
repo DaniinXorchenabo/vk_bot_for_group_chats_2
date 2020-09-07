@@ -104,6 +104,7 @@ def sign_in_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who
 def sign_in_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     sign_in_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
 
+
 @VkBase.commands('/sign_out', adm_com=True)
 def sign_out_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='администратор', **kw_f):
     peer_id = event['object']['peer_id']
@@ -118,21 +119,38 @@ def sign_out_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), wh
 
 @VkBase.commands('/dev_sign_out', dev_com=True)
 def sign_out_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
-    sign_in_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
+    sign_out_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users, who='developer', who2='разработчик', **kw_f)
 
 
 @VkBase.commands('/stat_me')
-def det_users_info(cls, *ar_f, event=dict(), queues=dict(), vp=dict(), **kw_f):
+def get_users_info(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     peer_id = event['object']['peer_id']
     ans = ''
-    for name, _dict in vp.items():
+    for name, _dict in vip_users.items():
         if peer_id in _dict:
             ans += 'вы - ' + name + '\n'
             ans += ('вы находитесь в сессии' if _dict[peer_id] else
                     'но сейчас вым доступны только команды обычного пользователя') + '\n'
     if not bool(ans):
-        ans = 'вы обладаете правами обычного пользователя'
+        ans += 'вы обладаете правами обычного пользователя'
     cls.put_send('text', ans, event, queues=queues)
+
+
+@VkBase.commands('/del_me', db_acc=(False, 0), adm_com=True)
+def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    peer_id = event['object']['peer_id']
+    if peer_id in vip_users[f'admins']:
+        del vip_users['admins'][peer_id]
+        cls.put_db('content', '/del_me', event, peer_id, pr=0, queues=queues)
+
+
+@VkBase.commands('/dev_del_me', db_acc=(False, 0), dev_com=True)
+def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    peer_id = event['object']['peer_id']
+    if peer_id in vip_users[f'developers']:
+        del vip_users['developers'][peer_id]
+        cls.put_db('content', '/dev_del_me', event, peer_id, pr=0, queues=queues)
+
 
 if __name__ == '__main__':
     from os import getcwd
