@@ -71,7 +71,7 @@ def admin_log_in(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(),
     # print(f'{who}_pas', getattr(cls, f'{who}_pas'))
     if all_text == password:
         vip_users[f'{who}s'][peer_id] = True
-        cls.put_db('content', f'/add_{who}', peer_id, queues=queues, pr=0)
+        cls.put_db('content', f'/add_{who}', {}, peer_id, queues=queues, pr=0)
         cls.put_send('text', ans3, event, queues=queues)
     else:
         if bool(all_text):
@@ -150,6 +150,26 @@ def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict()
     if peer_id in vip_users[f'developers']:
         del vip_users['developers'][peer_id]
         cls.put_db('content', '/dev_del_me', event, peer_id, pr=0, queues=queues)
+
+@VkBase.commands('/add_admin', db_acc=(False, 0), adm_com=True, it_is_part=1)
+def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    all_text = (event['object']['text'].split() + [''])[1]
+    peer_id = event['object']['peer_id']
+    if not all_text.isdigit():
+        ans = 'после /add_admin должно идти id, только из цифр'
+        cls.put_send('text', ans, event, queues=queues)
+        return
+    new_adm = int(all_text)
+    if new_adm in vip_users['admins']:
+        ans = 'нельзя назначить админом человека, который уже админ))))'
+        cls.put_send('text', ans, event, queues=queues)
+        return
+    cls.put_db('content', '/add_admin', {}, new_adm, pr=0, queues=queues)
+    vip_users['admins'][new_adm] = False
+    ans = 'пользователь назначен админом, чтобы войти в сессию, ему необходимо ввести: /sign_in'
+    cls.put_send('text', ans, event, queues=queues)
+    print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
+
 
 
 if __name__ == '__main__':

@@ -136,7 +136,7 @@ def get_admins(cls, *args_q, queues=dict(), **kwargs_q):
 
 @ControlDB.command('/add_admin', pr=0)
 @db_session
-def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
+def add_admin(cls, command, data, peer_id, *args_q, queues=dict(), **kwargs_q):
     # print('---------------', [peer_id])
     if not Admins.exists(id=int(peer_id)):
         Admins(id=int(peer_id))
@@ -145,7 +145,7 @@ def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
 
 @ControlDB.command('/add_developer', pr=0)
 @db_session
-def add_admin(cls, command, peer_id, *args_q, queues=dict(), **kwargs_q):
+def add_admin(cls, command, data, peer_id, *args_q, queues=dict(), **kwargs_q):
     # print('---------------', [peer_id])
     if not Developers.exists(id=int(peer_id)):
         Developers(id=int(peer_id))
