@@ -137,7 +137,7 @@ def get_users_info(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **
 
 
 @VkBase.commands('/del_me', db_acc=(False, 0), adm_com=True)
-def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+def del_me_for_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     peer_id = event['object']['peer_id']
     if peer_id in vip_users[f'admins']:
         del vip_users['admins'][peer_id]
@@ -145,32 +145,37 @@ def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict()
 
 
 @VkBase.commands('/dev_del_me', db_acc=(False, 0), dev_com=True)
-def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+def del_me_for_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     peer_id = event['object']['peer_id']
     if peer_id in vip_users[f'developers']:
         del vip_users['developers'][peer_id]
         cls.put_db('content', '/dev_del_me', event, peer_id, pr=0, queues=queues)
 
+
 @VkBase.commands('/add_admin', db_acc=(False, 0), adm_com=True, it_is_part=1)
-def del_me_from_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+def add_new_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='админ', who3='', **kw_f):
     all_text = (event['object']['text'].split() + [''])[1]
     peer_id = event['object']['peer_id']
     if not all_text.isdigit():
-        ans = 'после /add_admin должно идти id, только из цифр'
+        ans = f'после /add_{who} должно идти id, только из цифр'
         cls.put_send('text', ans, event, queues=queues)
         return
     new_adm = int(all_text)
-    if new_adm in vip_users['admins']:
-        ans = 'нельзя назначить админом человека, который уже админ))))'
+    if new_adm in vip_users[who + 's']:
+        ans = f'нельзя назначить {who2}ом человека, который уже {who2}))))'
         cls.put_send('text', ans, event, queues=queues)
         return
-    cls.put_db('content', '/add_admin', {}, new_adm, pr=0, queues=queues)
-    vip_users['admins'][new_adm] = False
-    ans = 'пользователь назначен админом, чтобы войти в сессию, ему необходимо ввести: /sign_in'
+    cls.put_db('content', f'/add_{who}', {}, new_adm, pr=0, queues=queues)
+    vip_users[who + 's'][new_adm] = False
+    ans = f'пользователь назначен {who2}ом, чтобы войти в сессию, ему необходимо ввести: /{who3}sign_in'
     cls.put_send('text', ans, event, queues=queues)
     print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
 
 
+@VkBase.commands('/add_developer', db_acc=(False, 0), dev_com=True, it_is_part=1)
+def add_new_developers(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    add_new_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users,
+                       who='developer', who2='разработчик', who3='dev_', **kw_f)
 
 if __name__ == '__main__':
     from os import getcwd
