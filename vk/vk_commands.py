@@ -152,7 +152,7 @@ def del_me_for_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict
         cls.put_db('content', '/dev_del_me', event, peer_id, pr=0, queues=queues)
 
 
-@VkBase.commands('/add_admin', db_acc=(False, 0), adm_com=True, it_is_part=1)
+@VkBase.commands('/add_admin', db_acc=(False, 0), adm_com=True, dev_com=True, it_is_part=1)
 def add_new_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='админ', who3='', **kw_f):
     all_text = (event['object']['text'].split() + [''])[1]
     peer_id = event['object']['peer_id']
@@ -176,6 +176,27 @@ def add_new_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who
 def add_new_developers(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     add_new_admin(cls, *ar_f, event=event, queues=queues, vip_users=vip_users,
                        who='developer', who2='разработчик', who3='dev_', **kw_f)
+
+
+@VkBase.commands('/del_admin', db_acc=(False, 0), dev_com=True, it_is_part=1)
+def del_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='админ', who3='', **kw_f):
+    all_text = (event['object']['text'].split() + [''])[1]
+    peer_id = event['object']['peer_id']
+    if not all_text.isdigit():
+        ans = f'после /del_admin должно идти id, только из цифр'
+        cls.put_send('text', ans, event, queues=queues)
+        return
+    del_adm = int(all_text)
+    if del_adm not in vip_users['admins']:
+        ans = f'нельзя удалить человека из состава администраторов, если он на администратор'
+        cls.put_send('text', ans, event, queues=queues)
+        return
+    del vip_users['admins'][del_adm]
+    cls.put_db('content', '/del_me', event, del_adm, pr=0, queues=queues)
+    ans = f'пользователь был удалён из состава администраторов'
+    cls.put_send('text', ans, event, queues=queues)
+    print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
+
 
 if __name__ == '__main__':
     from os import getcwd
