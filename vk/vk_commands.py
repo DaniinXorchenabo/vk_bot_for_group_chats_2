@@ -198,6 +198,15 @@ def del_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='ad
     print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
 
 
+@VkBase.commands('/get_list_admins', db_acc=(False, 0), dev_com=True)
+def get_list_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='админ', who3='', **kw_f):
+    cls.put_db('content', '/get_list_admins', event, 0, queues=queues, pr=0)
+    ans = f'список админов в памяти:\n'
+    ans += '\n'.join([f'{k}: {"не " if not v else ""}в сессии' for k, v in vip_users['admins'].items()])
+    cls.put_send('text', ans, event, queues=queues)
+
+
+
 if __name__ == '__main__':
     from os import getcwd
     from os.path import split as os_split

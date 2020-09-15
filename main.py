@@ -23,7 +23,7 @@ if __name__ == '__main__':
     #   type='func':    очередь = [('func', (func, args: list, kwargs: dict)), ...]
     #   type='ev':   очередь = [('ev', (type_ev:str, data:dict, func, args, kwargs)), ...] (ev - событие)
     #   type='text':   очередь = [('text', (text: str, data: dict)), ...]  data - словарь из пришедшего сообщения
-    #   text='???':     очередь = [('content', (type:str, (data): str, peer_id:int, )), ...]
+    #   text='???':     очередь = [('content', (type:str, (data), peer_id:int, )), ...]
     #   type='cooking_msg'      = [('cooking_msg', msg: dict), ...]
     #   type='change_param'      = [('change_param', (peer_id, text, data: dict)), ...] data - словарь с обновленными параметрами
     #   type='inner_info'        = [('inner_info', (type, data)), ...]
