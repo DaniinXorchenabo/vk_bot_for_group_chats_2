@@ -206,6 +206,12 @@ def get_list_admins(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), w
     cls.put_send('text', ans, event, queues=queues)
 
 
+@VkBase.commands('/get_list_developers', db_acc=(False, 0), dev_com=True)
+def get_list_developers(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='админ', who3='', **kw_f):
+    cls.put_db('content', '/get_list_developers', event, 0, queues=queues, pr=0)
+    ans = f'список разработчиков в памяти:\n'
+    ans += '\n'.join([f'{k}: {"не " if not v else ""}в сессии' for k, v in vip_users['developers'].items()])
+    cls.put_send('text', ans, event, queues=queues)
 
 if __name__ == '__main__':
     from os import getcwd

@@ -178,3 +178,11 @@ def get_list_admins(cls, command, data: dict,  peer_id_useless, *args_q, queues=
     ans = f'список админов из базы данных:\n'
     ans += '\n'.join([str(adm.id) for adm in Admins.select()])
     cls.put_send('text', ans, data, queues=queues)
+
+
+@ControlDB.command('/get_list_developers', pr=0)
+@db_session
+def get_list_developers(cls, command, data: dict,  peer_id_useless, *args_q, queues=dict(), **kwargs_q):
+    ans = f'список разработчиков из базы данных:\n'
+    ans += '\n'.join([str(dev.id) for dev in Developers.select()])
+    cls.put_send('text', ans, data, queues=queues)
