@@ -38,7 +38,7 @@ if __name__ == '__main__':
     users_data = ['admins', 'developers']
     # {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
     users_data = {i: Manager().dict() for i in users_data}
-
+    dddd = Manager().dict()
     # =======! Создание общих частей для классов-родителей !=======
     BaseClass.common_start(queues=chains_mps, types=types)
     VkBase.common_start()

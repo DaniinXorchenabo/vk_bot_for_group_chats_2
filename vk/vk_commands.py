@@ -213,6 +213,35 @@ def get_list_developers(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(
     ans += '\n'.join([f'{k}: {"не " if not v else ""}в сессии' for k, v in vip_users['developers'].items()])
     cls.put_send('text', ans, event, queues=queues)
 
+
+@VkBase.commands('/edit_admin_password', db_acc=(False, 0), dev_com=True, it_is_part=1)
+def edit_admin_password(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    from settings.config import cfg, save_change_in_cinfig_file
+
+    new_passw = (event['object']['text'].split() + [''])[1]
+    print('-------------новый админский пароль', new_passw)
+    cfg.set("passwords", "admin", new_passw)
+    save_change_in_cinfig_file()
+    print('занесен в .ini')
+    cls.put_db('content', '/del_all_admins', event, '', pr=0, queues=queues)
+    print('ззапрос на удаление всех админов отправлен')
+
+    ans = 'Пароль был успешно сменён.\n'
+    print(vip_users)
+    print(vip_users['admins'])
+    if vip_users and bool(vip_users) and type(vip_users) == dict:
+        ff = [f'{k}, ' for k, _ in vip_users['admins'].items()]
+        print('54545')
+        ans += '\n'.join(ff)
+    ans += '\n больше не являются админами'
+    print('создан ответ')
+    vip_users['admins'].clear()
+    print('очистка словаря админов завершена')
+
+    cls.put_send('text', ans, event, queues=queues)
+
+
+
 if __name__ == '__main__':
     from os import getcwd
     from os.path import split as os_split
