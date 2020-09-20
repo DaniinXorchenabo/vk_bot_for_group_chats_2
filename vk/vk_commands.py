@@ -152,7 +152,7 @@ def del_me_for_developer(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict
         cls.put_db('content', '/dev_del_me', event, peer_id, pr=0, queues=queues)
 
 
-@VkBase.commands('/add_admin', db_acc=(False, 0), adm_com=True, dev_com=True, it_is_part=1)
+@VkBase.commands('/add_admin', db_acc=(False, 0), adm_cm=True, dev_com=True, it_is_part=1)
 def add_new_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='admin', who2='админ', who3='', **kw_f):
     all_text = (event['object']['text'].split() + [''])[1]
     peer_id = event['object']['peer_id']
