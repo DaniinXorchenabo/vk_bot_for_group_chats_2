@@ -219,25 +219,23 @@ def edit_admin_password(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(
     from settings.config import cfg, save_change_in_cinfig_file
 
     new_passw = (event['object']['text'].split() + [''])[1]
-    print('-------------новый админский пароль', new_passw)
+    # print('-------------новый админский пароль', new_passw)
     cfg.set("passwords", "admin", new_passw)
     save_change_in_cinfig_file()
-    print('занесен в .ini')
+    # print('занесен в .ini')
     cls.put_db('content', '/del_all_admins', event, '', pr=0, queues=queues)
-    print('ззапрос на удаление всех админов отправлен')
-
+    # print('ззапрос на удаление всех админов отправлен')
     ans = 'Пароль был успешно сменён.\n'
-    print(vip_users)
-    print(vip_users['admins'])
+    # print(vip_users)
+    # print(vip_users['admins'])
     if vip_users and bool(vip_users) and type(vip_users) == dict:
         ff = [f'{k}, ' for k, _ in vip_users['admins'].items()]
-        print('54545')
+        # print('54545')
         ans += '\n'.join(ff)
     ans += '\n больше не являются админами'
-    print('создан ответ')
+    # print('создан ответ')
     vip_users['admins'].clear()
-    print('очистка словаря админов завершена')
-
+    # print('очистка словаря админов завершена')
     cls.put_send('text', ans, event, queues=queues)
 
 
