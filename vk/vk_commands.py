@@ -195,7 +195,7 @@ def del_admin(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), who='ad
     cls.put_db('content', '/del_me', event, del_adm, pr=0, queues=queues)
     ans = f'пользователь был удалён из состава администраторов'
     cls.put_send('text', ans, event, queues=queues)
-    print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
+    # print(*[[(key, val) for key, val in s.items()] for d, s in vip_users.items()])
 
 
 @VkBase.commands('/get_list_admins', db_acc=(False, 0), dev_com=True)
@@ -238,6 +238,28 @@ def edit_admin_password(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(
     # print('очистка словаря админов завершена')
     cls.put_send('text', ans, event, queues=queues)
 
+
+@VkBase.commands('/send_my_msg', db_acc=(False, 0), adm_com=True, it_is_part=1)
+def send_my_msg(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
+    sending_text = event['object'].get('fwd_messages', [])
+    if not bool(sending_text):
+        ans = 'Необходимо переслать боту сообщение, текст которого бот будет пересылать'
+        cls.put_send('text', ans, event, queues=queues)
+        return
+    for_who_msg = ['all', 'all_chats', 'all_users']
+    in_this_msg = set()
+    all_text = set([i for i in (event['object']['text'].split() + [''])[1:] if (i in for_who_msg and not in_this_msg.add(i)) or i.isdigit])
+    if not bool(all_text):
+        ans = 'Необходимо указать, кому пересылать сообщение\n'
+        ans += "На данный момент можно указать id пользователей (только цифры), или один из модификаторов:\n"
+        ans += "all - всем,\n all_chats - во все чаты,\n all_users всм людям"
+        cls.put_send('text', ans, event, queues=queues)
+        return
+    if len(in_this_msg) > 1:
+        # если ключевых слов больше, чем одно, то мы в любом случае отправляем сообщение всем пользователям
+        all_text = {'all'}
+
+    cls.put_proc('content', '/send_some_users', {'data_msg': sending_text, 'ids': all_text}, 0, queues=queues, pr=-2)
 
 
 if __name__ == '__main__':

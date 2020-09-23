@@ -35,11 +35,11 @@ class VkListen(VkBase):
 
     @classmethod
     def processing_new_msg(cls, event, queues, vip_users):
-        print('vip_users:', {key: {(k, v) for k, v in val.items()} for key, val in vip_users.items()})
+        # print('vip_users:', {key: {(k, v) for k, v in val.items()} for key, val in vip_users.items()})
         text = event.object.text
         # print(text)
         cl_com, text_find = (0, text) if len(text.split()) < 2 else (1, text.split()[0])
-
+        print(event.raw)
         # если команда специальная, проверяем: ксть ли у пользователя соответствующий доступ
         if text_find in cls.admins_com and event.object.peer_id not in vip_users['admins']:
             cls.put_send('text', '''вы не админ, поэтому не можете использовать данную команду.
@@ -53,7 +53,7 @@ class VkListen(VkBase):
         # print('-===========')
         # проверяем, может команда не требует доступа к БД
         if text_find in cls.DBless_com[cl_com]:
-            print('---------------------')
+            # print('---------------------')
             cls.func_for_com[text_find](cls, event=event.raw, queues=queues, vip_users=vip_users)
             return
 
@@ -64,7 +64,7 @@ class VkListen(VkBase):
                                        if not commands_p or text_find in commands_p[cl_com]), 1))
             # print('com, pr', com, pr)
             if com:  # com = None or list
-                print(cls.find_main_com, text_find)
+                # print(cls.find_main_com, text_find)
                 code_comand = cls.find_main_com[text_find]
                 # print('*******')
                 cls.func_for_com[code_comand](cls, code_comand, event=event.raw, pr=pr, queues=queues, vip_users=vip_users)

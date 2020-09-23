@@ -50,8 +50,8 @@ class BaseClass:
         # print('создание очередей без приоритета:', end='\t')
         [setattr(BaseClass, 'put_' + key,
                   staticmethod(lambda _type, *content, queues=dict(), key_f=str(key): (
-                  print('put_' + key_f + ' working', queues[key_f], end='\t'), queues[key_f].put((_type, content)),
-                  print('put_' + key_f + ' ended', end='\t'))))
+                   queues[key_f].put((_type, content)),  # print('put_' + key_f + ' working', queues[key_f], end='\t'), print('put_' + key_f + ' ended', end='\t')
+                  )))
          for key, q in queues.items() if type(q) != list and not hasattr(BaseClass, 'put_' + key)]
         # print('завершилось')
 

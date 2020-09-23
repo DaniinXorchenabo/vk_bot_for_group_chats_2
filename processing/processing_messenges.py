@@ -18,7 +18,7 @@ class ProcessingMsg(BaseClass):
             q_or_none = cls.get_proc(queues=queues)
 
             if q_or_none:
-                print('from ProcessingMsg.working', q_or_none)
+                # print('from ProcessingMsg.working', q_or_none)
                 cls.q_data_proc(*q_or_none, queues=queues)  # -> cls.event_type_proc() or content_type_proc()
             sleep(0.1)
 
@@ -30,7 +30,7 @@ class ProcessingMsg(BaseClass):
 
     @classmethod
     def content_type_proc(cls, type_ev, data, *args, queues=dict(), **kw_cl):
-        print(type_ev, *data)
+        # print(type_ev, *data)
 
         cls.func_for_com[type_ev](cls, type_ev, *data, queues=queues, **kw_cl)
 

@@ -27,7 +27,7 @@ class ControlDB(BaseClass):
             queue = cls.get_db(queues=queues)
             # print('************', queue)
             if queue:
-                print('from db class', queue)
+                # print('from db class', queue)
                 cls.q_data_proc(*queue, queues=queues)
             else:
                 sleep(0.1)
@@ -35,9 +35,9 @@ class ControlDB(BaseClass):
     # =======! Processing !=======
     @classmethod
     def content_type_proc(cls, comamnd, *args_q, queues=dict(), **kwargs_q):
-        print('-877&^^%', [comamnd], *args_q, queues, kwargs_q)
-        print(cls.func_for_com)
-        print('-8*********')
+        # print('-877&^^%', [comamnd], *args_q, queues, kwargs_q)
+        # print(cls.func_for_com)
+        # print('-8*********')
         cls.func_for_com[comamnd](cls, comamnd, *args_q, queues=queues, **kwargs_q)
 
     @classmethod
