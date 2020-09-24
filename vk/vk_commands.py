@@ -259,7 +259,9 @@ def send_my_msg(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_
         # если ключевых слов больше, чем одно, то мы в любом случае отправляем сообщение всем пользователям
         all_text = {'all'}
 
-    cls.put_proc('content', '/send_some_users', {'data_msg': sending_text, 'ids': all_text}, 0, queues=queues, pr=-2)
+    cls.put_proc('content', '/send_some_users',
+                 {'data_msg': sending_text, 'ids': all_text},
+                 event['object']['peer_id'], queues=queues, pr=-2)
 
 
 if __name__ == '__main__':

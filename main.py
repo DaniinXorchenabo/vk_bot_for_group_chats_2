@@ -30,6 +30,7 @@ if __name__ == '__main__':
     #       proc - для отправки в класс обработки сообщений
     #       db - для отправки в класс базы данных
     #       type_ev = [new_msg - новое сообщение]
+
     types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
     chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}]
     chains_mps = {(i if type(i) != dict else list(i.keys())[0]): (

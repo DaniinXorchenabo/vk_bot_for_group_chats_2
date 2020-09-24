@@ -195,3 +195,25 @@ def del_all_admins(cls, command, data: dict,  peer_id_useless, *args_q, queues=d
     commit()
     ans = f'все админы были успешно удалены и БД'
     cls.put_send('text', ans, data, queues=queues)
+
+
+@ControlDB.command('/send_some_users', pr=-2)
+@db_session
+def send_some_users(cls, command, data: dict,  peer_id_admin, *args_q, queues=dict(), **kwargs_q):
+    if "all" in data['ids']:
+        filt_f = lambda i: True
+        data['ids'] = set()
+    elif "all_chats" in data['ids']:
+        filt_f = lambda i: int(i) >= 2000000000
+        data['ids'].discard('all_chats')
+    elif "all_users" in data['ids']:
+        filt_f = lambda i: int(i) < 2000000000
+        data['ids'].discard('all_users')
+    else:
+        filt_f = lambda i: True
+    ids = set(Chat.select(lambda ent: filt_f(ent.id) or ent.id in data['ids']))
+    not_found_id = data['ids'] - ids
+    if bool(not_found_id):
+        ans = "Не получилось отправить сообщения:\n"
+        ans += '\n'.join(map(str, not_found_id))
+        cls.put_send('text', ans, {'peer_id': peer_id_admin}, queues=queues)
