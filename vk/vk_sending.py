@@ -33,7 +33,7 @@ class VkSending(VkBase):
         cls.send_msg(msg_dict)
 
     @classmethod
-    def text_type_proc(cls, text, last_msg, *args, queues=dict(), **kwargs):
+    def text_type_proc(cls, text: str, last_msg: dict, *args, queues=dict(), **kwargs):
         cls.gen_and_send_msg(text, last_msg)
 
     @classmethod
@@ -56,22 +56,27 @@ class VkSending(VkBase):
     # =======! Processing !=======
     @classmethod
     def add_peculiar_properties(cls, old_msg):
+        print('add_peculiar_properties working!')
         if old_msg.get('peer_id') and not cls.obj_dict.get(old_msg.get('peer_id')):
             cls(old_msg['peer_id'])
         if old_msg.get('peer_id'):
             # характеристики сообщений чата, присущие только ему (к примеру, клавиатура)
             old_msg.update(cls.obj_dict[old_msg['peer_id']].__dict__)
-
+        print('add_peculiar_properties end working!')
         return old_msg
 
     # =======! Sending !=======
     @classmethod
-    def gen_and_send_msg(cls, text, old_msg):
+    def gen_and_send_msg(cls, text: str, old_msg: dict):
+        print('gen_and_send_msg working!', text, old_msg)
         cls.send_msg(cls.gen_msg(text, old_msg))
 
     @classmethod
     def send_msg(cls, msg: dict):
-        cls.vk_session.method("messages.send", cls.add_peculiar_properties(msg))
+        print('send_msg working!')
+        aaa = cls.add_peculiar_properties(msg)
+        print(aaa)
+        cls.vk_session.method("messages.send", aaa)
 
     # =======! Работа с объектом чата !=======
     def __init__(self, chat_id, kw=None):

@@ -248,18 +248,18 @@ def send_my_msg(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_
         return
     for_who_msg = ['all', 'all_chats', 'all_users']
     in_this_msg = set()
-    all_text = set([i for i in (event['object']['text'].split() + [''])[1:] if (i in for_who_msg and not in_this_msg.add(i)) or i.isdigit])
+    all_text = set([(int(i) if i.isdigit() else i) for i in (event['object']['text'].split() + [''])[1:] if (i in for_who_msg and not in_this_msg.add(i)) or i.isdigit])
     if not bool(all_text):
         ans = 'Необходимо указать, кому пересылать сообщение\n'
         ans += "На данный момент можно указать id пользователей (только цифры), или один из модификаторов:\n"
         ans += "all - всем,\n all_chats - во все чаты,\n all_users всм людям"
-        cls.put_send('text', ans, event, queues=queues)
+        # cls.put_send('text', ans, event, queues=queues)
         return
     if len(in_this_msg) > 1:
         # если ключевых слов больше, чем одно, то мы в любом случае отправляем сообщение всем пользователям
         all_text = {'all'}
 
-    cls.put_proc('content', '/send_some_users',
+    cls.put_db('content', '/send_some_users',
                  {'data_msg': sending_text, 'ids': all_text},
                  event['object']['peer_id'], queues=queues, pr=-2)
 

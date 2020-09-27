@@ -84,13 +84,16 @@ class BaseClass:
     # =======! Создание ответа !=======
     @classmethod
     def gen_msg(cls, text: str, old_msg: dict):
+        print(f'gen_msg working!, text in {text}, old_msg is {old_msg}')
         # print('90080980*&&&&&&&&&&&&&&&&&&&&&')
         aaa = cls.correcting_msg_text(text)
         # print(aaa)
+        print('gen_msg working!(2)')
         return cls.gen_answ_dict(old_msg, aaa, func=lambda i: type(i) != dict)
 
     @classmethod
     def correcting_msg_text(cls, text):
+        print('correcting_msg_text working!', text)
         if not cls.morph:
             cls.morph = cls.MorphAnalyzer()
         # print('correcting_msg_text')
@@ -98,17 +101,18 @@ class BaseClass:
             if type(text) == str:
                 text = cls.nltk_w_tok(text)
             elif type(text) == dict:
-                text = text.keys()
+                text = list(text.keys())
             else:
                 text = list(text)
-        # print('correcting_msg_text ...')
+
+        print('correcting_msg_text ...', text)
         return re_sub(r'(\s{1,})([.,!:;])', r'\2', ' '.join([(word.title() if bool(list(
             filter(lambda p: p.score > cls.prob_thresh and ('Name' in p.tag or 'Sgtm' in p.tag or "Geox" in p.tag),
                    cls.morph.parse(word)))) or ind == 0 else word) for ind, word in enumerate(text)]))
 
     @classmethod
     def gen_answ_dict(cls, _dict: dict, text: str, func=lambda i: True, deep=0):
-        # print('gen_answ_dict started')
+        print('gen_answ_dict started')
         if deep > 2:
             return dict()
         nested_dict = []

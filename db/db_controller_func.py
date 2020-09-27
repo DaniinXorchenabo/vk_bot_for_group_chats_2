@@ -200,6 +200,7 @@ def del_all_admins(cls, command, data: dict,  peer_id_useless, *args_q, queues=d
 @ControlDB.command('/send_some_users', pr=-2)
 @db_session
 def send_some_users(cls, command, data: dict,  peer_id_admin, *args_q, queues=dict(), **kwargs_q):
+    filt_f = lambda i: i in data['ids']
     if "all" in data['ids']:
         filt_f = lambda i: True
         data['ids'] = set()
@@ -209,11 +210,16 @@ def send_some_users(cls, command, data: dict,  peer_id_admin, *args_q, queues=di
     elif "all_users" in data['ids']:
         filt_f = lambda i: int(i) < 2000000000
         data['ids'].discard('all_users')
-    else:
-        filt_f = lambda i: True
-    ids = set(Chat.select(lambda ent: filt_f(ent.id) or ent.id in data['ids']))
+    ids = {int(entity.id) for entity in set(Chat.select(lambda ent: filt_f(int(ent.id)) or int(ent.id) in data['ids']))}
     not_found_id = data['ids'] - ids
     if bool(not_found_id):
         ans = "Не получилось отправить сообщения:\n"
         ans += '\n'.join(map(str, not_found_id))
-        cls.put_send('text', ans, {'peer_id': peer_id_admin}, queues=queues)
+        # cls.put_send('text', ans, {'peer_id': peer_id_admin}, queues=queues)
+    print(data['data_msg'])
+    send_text = data['data_msg']['text']
+    data.update(data['data_msg'])
+    del data['data_msg']
+    del data['ids']
+    print('отправляю сообщения следующим пользователям:', *ids)
+    [(data.update({'peer_id': int(_id)}), cls.put_send('text', send_text, {'peer_id': int(_id)}, queues=queues)) for _id in ids]
