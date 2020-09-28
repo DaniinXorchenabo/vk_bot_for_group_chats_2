@@ -242,6 +242,11 @@ def edit_admin_password(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(
 @VkBase.commands('/send_my_msg', db_acc=(False, 0), adm_com=True, it_is_part=1)
 def send_my_msg(cls, *ar_f, event=dict(), queues=dict(), vip_users=dict(), **kw_f):
     sending_text = event['object'].get('fwd_messages', [])
+    # проблема строчкой выше.
+    # дело в том, что мы получаем массив, содержащий несколько словарей
+    # из привеенных сообщений. Массив надо прогнать по циклу и объединить
+    # параметры в один словарь. Текст надо склеить, словари проапдейтить,
+    # списки тоже склеить.
     if not bool(sending_text):
         ans = 'Необходимо переслать боту сообщение, текст которого бот будет пересылать'
         cls.put_send('text', ans, event, queues=queues)
