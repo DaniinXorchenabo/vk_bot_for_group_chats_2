@@ -28,7 +28,8 @@ class BaseClass:
         cls.morph = cls.MorphAnalyzer()
 
     @classmethod
-    def start(cls, *ar_cl, queues=dict(), types=[], **kw_cl):
+    def start(cls, *ar_cl, queues=dict(), types=list(), **kw_cl):
+    # def start(cls, *ar_cl, queues=dict(), types=[], **kw_cl):
 
         try:
             cls.create_relation_proc(queues)
