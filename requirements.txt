@@ -2,3 +2,4 @@ pymorphy2
 regex
 nltk
 pony
+vk-api
