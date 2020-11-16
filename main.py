@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
     print('error_callback_func', )
