@@ -4,7 +4,7 @@ from base.base_libs import *
 class BaseClass:
     from pymorphy2 import MorphAnalyzer
     from nltk import word_tokenize as nltk_w_tok, download as nltk_download
-    # nltk_download('punkt')
+    nltk_download('punkt')
 
     run = False
     kw = dict()
