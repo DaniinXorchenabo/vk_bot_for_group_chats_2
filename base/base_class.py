@@ -29,6 +29,7 @@ class BaseClass:
 
     @classmethod
     def start(cls, *ar_cl, queues=dict(), types=[], **kw_cl):
+
         try:
             cls.create_relation_proc(queues)
             cls.gen_proc_func_from_types(types)
