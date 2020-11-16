@@ -12,14 +12,34 @@ if __name__ == '__main__':
     import importlib
     # import nltk.collections
     # importlib.import_module("base.base_libs.py")
-    from base.base_libs import *
-    from base.base_class import BaseClass
-    from vk.vk_base_class import VkBase
-    # from vk.vk_commands import *
-    from processing.processing_messenges import ProcessingMsg
-    from db.db_controller import ControlDB
-    from vk.vk_listen import VkListen
-    from vk.vk_sending import VkSending
+
+    try:
+        ff
+        from base.base_libs import *
+        from base.base_class import BaseClass
+        from vk.vk_base_class import VkBase
+        # from vk.vk_commands import *
+        from processing.processing_messenges import ProcessingMsg
+        from db.db_controller import ControlDB
+        from vk.vk_listen import VkListen
+        from vk.vk_sending import VkSending
+    except Exception as e:
+        print('произошла ошибка', e)
+        print('попытка исправить')
+        import sys
+        import os
+
+        my_path = os.getcwd()
+        dirs = [os.path.join(my_path, i) for i in os.listdir(my_path)]
+        sys.path.extend(dirs)
+        from base_libs import *
+        from base_class import BaseClass
+        from vk_base_class import VkBase
+        # from vk.vk_commands import *
+        from processing_messenges import ProcessingMsg
+        from db_controller import ControlDB
+        from vk_listen import VkListen
+        from vk_sending import VkSending
     from multiprocessing import Pool, cpu_count, Manager
 
 

@@ -131,9 +131,12 @@ if __name__ == '__main__':
     # import importlib
     # import nltk.collections
     # importlib.import_module()
-    from nltk import download
+    # from nltk import download
+    import settings.config
+    import sys
 
-    download(prefix='punkt', force=True)
+    print(type(sys.modules["settings.config"]))
+    # download(prefix='punkt', force=True)
     path = os_split(getcwd())
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
