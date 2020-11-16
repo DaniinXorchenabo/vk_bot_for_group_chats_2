@@ -14,7 +14,6 @@ if __name__ == '__main__':
     # importlib.import_module("base.base_libs.py")
 
     try:
-        ff
         from base.base_libs import *
         from base.base_class import BaseClass
         from vk.vk_base_class import VkBase
