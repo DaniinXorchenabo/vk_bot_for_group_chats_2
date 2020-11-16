@@ -131,7 +131,7 @@ if __name__ == '__main__':
     # import importlib
     # import nltk.collections
     # importlib.import_module()
-    from nltk import  download
+    from nltk import download
 
     download(prefix='punkt', force=True)
     path = os_split(getcwd())

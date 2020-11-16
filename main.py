@@ -9,6 +9,9 @@ def error_callback_func(*args, **kwargs):
 
 
 if __name__ == '__main__':
+    import importlib
+    # import nltk.collections
+    # importlib.import_module("base.base_libs.py")
     from base.base_libs import *
     from base.base_class import BaseClass
     from vk.vk_base_class import VkBase
