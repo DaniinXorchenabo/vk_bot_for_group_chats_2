@@ -1,5 +1,4 @@
---user pymorphy2
---user vk_api
---user regex
---user nltk
---user pony
+pymorphy2
+regex
+nltk
+pony
