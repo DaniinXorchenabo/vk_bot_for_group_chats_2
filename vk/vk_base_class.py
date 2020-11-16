@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from base.base_class import *
 from settings.config import cfg
 from vk_api import VkApi

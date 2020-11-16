@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from os.path import dirname, abspath, join, exists
 import sys
 from configparser import ConfigParser

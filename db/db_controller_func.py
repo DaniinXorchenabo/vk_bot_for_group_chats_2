@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from db.db_controller import ControlDB
 from db.models import *
 from collections import Counter

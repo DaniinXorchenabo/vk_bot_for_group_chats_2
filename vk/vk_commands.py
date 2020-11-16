@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from vk.vk_base_class import VkBase
 from vk.vk_buttons import *
 from random import randint

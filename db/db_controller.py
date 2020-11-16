@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from base.base_class import BaseClass
 from db.models import *
 from base.base_libs import *
