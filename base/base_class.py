@@ -4,7 +4,7 @@ from base.base_libs import *
 class BaseClass:
     from pymorphy2 import MorphAnalyzer
     from nltk import word_tokenize as nltk_w_tok, download as nltk_download
-    nltk_download('punkt')
+    # nltk_download('punkt')
 
     run = False
     kw = dict()
@@ -128,7 +128,12 @@ class BaseClass:
 if __name__ == '__main__':
     from os import getcwd, chdir
     from os.path import split as os_split
+    # import importlib
+    # import nltk.collections
+    # importlib.import_module()
+    from nltk import  download
 
+    download(prefix='punkt', force=True)
     path = os_split(getcwd())
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     print(path)
