@@ -9,9 +9,22 @@ def error_callback_func(*args, **kwargs):
 
 
 if __name__ == '__main__':
+
+    from flask import Flask, request, json
+
+    app = Flask(__name__)
+
+    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
+    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk"]
+
+
+
+
     # import importlib
     # import nltk.collections
     # importlib.import_module("base.base_libs.py")
+    # import json
+    # from requests import request
 
     try:
         from base.base_libs import *
@@ -22,6 +35,7 @@ if __name__ == '__main__':
         from db.db_controller import ControlDB
         from vk.vk_listen import VkListen
         from vk.vk_sending import VkSending
+        from settings.config import cfg
     except Exception as e:
         print('произошла ошибка', e)
         print('попытка исправить')
@@ -39,8 +53,18 @@ if __name__ == '__main__':
         from db_controller import ControlDB
         from vk_listen import VkListen
         from vk_sending import VkSending
-    from multiprocessing import Pool, cpu_count, Manager
+        from config import cfg
 
+    @app.route('/', methods=['POST'])
+    def flask_processing():
+        print('909090----')
+        if type(chains_mps) != list:
+            data = json.loads(request.data)
+            chains_mps['new_event_from_vk'].put(data)
+
+        # return cfg.get("db", "name")
+
+    from multiprocessing import Pool, cpu_count, Manager
 
     # =======! initialization !=======
     pool = Pool(processes=2)
@@ -56,15 +80,13 @@ if __name__ == '__main__':
     #       db - для отправки в класс базы данных
     #       type_ev = [new_msg - новое сообщение]
 
-    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
-    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk"]
+
     chains_mps = {(i if type(i) != dict else list(i.keys())[0]): (
         Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])
         for i in chains_mps}
     users_data = ['admins', 'developers']
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
     users_data = {i: Manager().dict() for i in users_data}
-
 
     # =======! Создание общих частей для классов-родителей !=======
     BaseClass.common_start(queues=chains_mps, types=types)

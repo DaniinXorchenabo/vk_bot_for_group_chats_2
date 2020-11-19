@@ -3,3 +3,4 @@ regex
 nltk
 pony
 vk-api
+flask
