@@ -207,7 +207,7 @@ if __name__ == '__main__':
                                error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
     print(7)
-    while True:
-        sleep(1)
+    # while True:
+    #     sleep(1)
 else:
     print('90988888***********', __name__)
