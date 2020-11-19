@@ -26,10 +26,26 @@ def find_parh_to_dit(target_dir_name):
             path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     return path
 
+
+
+def is_valid_signature(x_hub_signature, data, private_key):
+    import hmac
+    import hashlib
+
+    # x_hub_signature and data are from the webhook payload
+    # private key is your webhook secret
+    hash_algorithm, github_signature = x_hub_signature.split('=', 1)
+    algorithm = hashlib.__dict__.get(hash_algorithm)
+    encoded_key = bytes(private_key, 'latin-1')
+    mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
+    return hmac.compare_digest(mac.hexdigest(), github_signature)
+
 if __name__ == '__main__':
 
+    import os
     from flask import Flask, request, json
     import git
+
 
     app = Flask(__name__)
 
@@ -85,9 +101,12 @@ if __name__ == '__main__':
     @app.route('/git_pull', methods=['POST'])
     def webhook():
         if request.method == 'POST':
-            repo = git.Repo('path/to/git_repo')
-            origin = repo.remotes.origin
-            origin.pull()
+            x_hub_signature = request.headers.get('X - Hub - Signature')
+            w_secret = os.environ.get("SECRET_KEY_FOR_UPDATE", None)
+            if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
+                repo = git.Repo('path/to/git_repo')
+                origin = repo.remotes.origin
+                origin.pull()
             return 'Updated PythonAnywhere successfully', 200
         else:
             return 'Wrong event type', 400
@@ -96,7 +115,7 @@ if __name__ == '__main__':
     import socket
 
     hostname = socket.gethostname()
-    print(find_parh_to_dit('hooks'))
+    # print(find_parh_to_dit('hooks'))
     git_path = find_parh_to_dit('.git')
     if "pythonanywhere" in str('hostname'):
         with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
