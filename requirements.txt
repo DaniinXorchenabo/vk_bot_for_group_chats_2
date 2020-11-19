@@ -4,3 +4,4 @@ nltk
 pony
 vk-api
 flask
+GitPython

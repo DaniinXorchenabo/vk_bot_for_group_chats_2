@@ -7,10 +7,29 @@ def error_callback_func(*args, **kwargs):
     print(kwargs)
     print('---------------------------------')
 
+def find_parh_to_dit(target_dir_name):
+    from os import getcwd
+    from os.path import split as os_split, exists, join as os_join
+
+    path = getcwd()
+    while target_dir_name not in path:
+        if exists(os_join(path, target_dir_name)):
+            path = os_join(path, target_dir_name)
+            break
+        now_dir = os_split(path)[1]
+        path = os_split(path)[0]
+        print(path, now_dir)
+    else:
+        all_path, end_dir = os_split(path)
+        while end_dir != target_dir_name:
+            now_dir = path[1]
+            path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
+    return path
 
 if __name__ == '__main__':
 
     from flask import Flask, request, json
+    import git
 
     app = Flask(__name__)
 
@@ -62,7 +81,30 @@ if __name__ == '__main__':
             data = json.loads(request.data)
             chains_mps['new_event_from_vk'].put(data)
 
-        # return cfg.get("db", "name")
+
+    @app.route('/git_pull', methods=['POST'])
+    def webhook():
+        if request.method == 'POST':
+            repo = git.Repo('path/to/git_repo')
+            origin = repo.remotes.origin
+            origin.pull()
+            return 'Updated PythonAnywhere successfully', 200
+        else:
+            return 'Wrong event type', 400
+
+
+    import socket
+
+    hostname = socket.gethostname()
+    print(find_parh_to_dit('hooks'))
+    git_path = find_parh_to_dit('.git')
+    if "pythonanywhere" in str('hostname'):
+        with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
+            run_file_path = f"""/var/www/{hostname.replace(
+                '.pythonanywhere.com', '').replace('https://', '').replace('http://', '').replace('.', '').replace(
+                '/', '').split(':')[0]}_pythonanywhere_com_wsgi.py"""
+            print(f"""#!/bin/sh\ntouch {run_file_path}""", file=file)
+        os.system(f"chmod +x {run_file_path}")
 
     from multiprocessing import Pool, cpu_count, Manager
 
