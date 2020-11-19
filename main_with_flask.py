@@ -114,6 +114,7 @@ if __name__ == '__main__':
 
     import socket
 
+
     hostname = socket.gethostname()
     # print(find_parh_to_dit('hooks'))
     git_path = find_parh_to_dit('.git')
