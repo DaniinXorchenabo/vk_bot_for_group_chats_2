@@ -159,5 +159,5 @@ if __name__ == '__main__':
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
                                error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
-    while True:
-        sleep(1)
+    # while True:
+    #     sleep(1)
