@@ -101,6 +101,7 @@ def flask_processing():
 def webhook():
     if request.method == 'POST':
         import os
+
         x_hub_signature = request.headers.get('X - Hub - Signature')
         w_secret = os.environ.get("SECRET_KEY_FOR_UPDATE", None)
         if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
