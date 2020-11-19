@@ -104,10 +104,13 @@ def webhook():
 
         x_hub_signature = request.headers.get('X - Hub - Signature')
         w_secret = os.environ.get("SECRET_KEY_FOR_UPDATE", None)
+        print('w_secret', w_secret)
         if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
+            print('pulling........')
             repo = git.Repo('path/to/git_repo')
             origin = repo.remotes.origin
             origin.pull()
+        print("it is mast be False", is_valid_signature(x_hub_signature, request.data, w_secret))
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
