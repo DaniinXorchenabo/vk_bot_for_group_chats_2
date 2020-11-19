@@ -1,4 +1,49 @@
 # -*- coding: utf-8 -*-
+count_process = 4
+from os.path import isfile
+
+from flask import Flask, request, json
+import git
+
+app = Flask(__name__)
+
+
+file_name = "counter"
+if isfile(file_name):
+    text = ""
+    with open(file_name, "r", encoding='utf-8') as f:
+        text += f.read().split()[0]
+    text = text if bool(text) else 'None'
+    print("text is ", text)
+    if text.isdigit():
+        if int(text) > count_process:
+            from os import remove
+            # значит это последний запущенный процесс
+            # удаляем файл счетчика
+
+            # remove(file_name)
+            print('-----')
+
+        else:
+            with open(file_name, "w", encoding='utf-8') as f:
+                print(str(int(text) + 1), file=f)
+    else:
+        with open(file_name, "w", encoding='utf-8') as f:
+            print("1", file=f)
+else:
+    print('******7&&&&&&&')
+    with open(file_name, "w", encoding='utf-8') as f:
+        print("1", file=f)
+
+__name__ = "sub.programm"
+with open(file_name, "r", encoding='utf-8') as f:
+    text = str(f.read()).split()[0]
+    if text != '1':
+        __name__ = "sub.programm"
+    else:
+        __name__ = "__main__"
+    print([text])
+
 
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
@@ -40,20 +85,40 @@ def is_valid_signature(x_hub_signature, data, private_key):
     mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
     return hmac.compare_digest(mac.hexdigest(), github_signature)
 
+
+
+
+
+@app.route('/', methods=['POST'])
+def flask_processing():
+    print('909090----')
+    if type(chains_mps) != list:
+        data = json.loads(request.data)
+        chains_mps['new_event_from_vk'].put(data)
+
+
+@app.route('/git_pull', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        x_hub_signature = request.headers.get('X - Hub - Signature')
+        w_secret = os.environ.get("SECRET_KEY_FOR_UPDATE", None)
+        if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
+            repo = git.Repo('path/to/git_repo')
+            origin = repo.remotes.origin
+            origin.pull()
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
+
+# text = ''
+# with open(file_name, "r", encoding='utf-8') as f:
+#     text += f.read().split()[0]
 if __name__ == '__main__':
-
+    print('^^^^^^^^^')
     import os
-    from flask import Flask, request, json
-    import git
-
-
-    app = Flask(__name__)
 
     types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
     chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk"]
-
-
-
 
     # import importlib
     # import nltk.collections
@@ -90,34 +155,14 @@ if __name__ == '__main__':
         from vk_sending import VkSending
         from config import cfg
 
-    @app.route('/', methods=['POST'])
-    def flask_processing():
-        print('909090----')
-        if type(chains_mps) != list:
-            data = json.loads(request.data)
-            chains_mps['new_event_from_vk'].put(data)
-
-
-    @app.route('/git_pull', methods=['POST'])
-    def webhook():
-        if request.method == 'POST':
-            x_hub_signature = request.headers.get('X - Hub - Signature')
-            w_secret = os.environ.get("SECRET_KEY_FOR_UPDATE", None)
-            if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
-                repo = git.Repo('path/to/git_repo')
-                origin = repo.remotes.origin
-                origin.pull()
-            return 'Updated PythonAnywhere successfully', 200
-        else:
-            return 'Wrong event type', 400
-
-
+    print(1)
     import socket
 
 
     hostname = socket.gethostname()
     # print(find_parh_to_dit('hooks'))
     git_path = find_parh_to_dit('.git')
+    print(2)
     if "pythonanywhere" in str('hostname'):
         with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
             run_file_path = f"""/var/www/{hostname.replace(
@@ -125,11 +170,11 @@ if __name__ == '__main__':
                 '/', '').split(':')[0]}_pythonanywhere_com_wsgi.py"""
             print(f"""#!/bin/sh\ntouch {run_file_path}""", file=file)
         os.system(f"chmod +x {run_file_path}")
-
+    print(3)
     from multiprocessing import Pool, cpu_count, Manager
-
+    print(3.5)
     # =======! initialization !=======
-    pool = Pool(processes=2)
+    pool = Pool(processes=count_process)
     # очередь = [(type: str, content: typle), ...]
     #   type='func':    очередь = [('func', (func, args: list, kwargs: dict)), ...]
     #   type='ev':   очередь = [('ev', (type_ev:str, data:dict, func, args, kwargs)), ...] (ev - событие)
@@ -142,22 +187,27 @@ if __name__ == '__main__':
     #       db - для отправки в класс базы данных
     #       type_ev = [new_msg - новое сообщение]
 
-
-    chains_mps = {(i if type(i) != dict else list(i.keys())[0]): (
-        Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])
+    print(4)
+    chains_mps = {(i if type(i) != dict else list(i.keys())[0]): [print(i), (
+        Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])][1]
         for i in chains_mps}
+    print(4.5)
     users_data = ['admins', 'developers']
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
     users_data = {i: Manager().dict() for i in users_data}
-
+    print(5)
     # =======! Создание общих частей для классов-родителей !=======
     BaseClass.common_start(queues=chains_mps, types=types)
     VkBase.common_start()
+    print(6)
     # =======! Start working !=======
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps, 'types': types},
                           error_callback=error_callback_func) for i in [VkListen, VkSending]]
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
                                error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
-    # while True:
-    #     sleep(1)
+    print(7)
+    while True:
+        sleep(1)
+else:
+    print('90988888***********', __name__)
