@@ -143,4 +143,4 @@ if __name__ == '__main__':
     # download(prefix='punkt')
     path = os_split(getcwd())
     path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
-    print(path)
+    chdir(path)

@@ -83,3 +83,11 @@ class VkListen(VkBase):
 
         # если команда не распознана, то отправляем текста сообщения для составления цепей Маркова
         cls.put_proc('content', "/new_msg", (text, event.object.peer_id), pr=-1, queues=queues)
+
+if __name__ == '__main__':
+    from os import getcwd, chdir
+    from os.path import split as os_split
+
+    path = os_split(getcwd())
+    path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
+    chdir(path)

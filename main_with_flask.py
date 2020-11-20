@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 count_process = 4
 from os.path import isfile
+from os import getcwd
 
 from flask import Flask, request, json
 import git
 
 app = Flask(__name__)
 
-
+print("Мой путь сейчас:", getcwd())
 file_name = "counter"
 if isfile(file_name):
     text = ""
@@ -87,11 +88,13 @@ def is_valid_signature(x_hub_signature, data, private_key):
 
     # x_hub_signature and data are from the webhook payload
     # private key is your webhook secret
-    hash_algorithm, github_signature = x_hub_signature.split('=', 1)
-    algorithm = hashlib.__dict__.get(hash_algorithm)
-    encoded_key = bytes(private_key, 'latin-1')
-    mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
-    return hmac.compare_digest(mac.hexdigest(), github_signature)
+    if x_hub_signature:
+        hash_algorithm, github_signature = x_hub_signature.split('=', 1)
+        algorithm = hashlib.__dict__.get(hash_algorithm)
+        encoded_key = bytes(private_key, 'latin-1')
+        mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
+        print('проверка подлинности почти замершилась')
+        return hmac.compare_digest(mac.hexdigest(), github_signature)
 
 
 
@@ -118,7 +121,7 @@ def webhook():
             repo = git.Repo('path/to/git_repo')
             origin = repo.remotes.origin
             origin.pull()
-        print("it is mast be False", is_valid_signature(x_hub_signature, request.data, w_secret))
+        print("it is mast be False", x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
