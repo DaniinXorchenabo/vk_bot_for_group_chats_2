@@ -175,8 +175,8 @@ if __name__ == '__main__':
     hostname = socket.gethostname()
     # print(find_parh_to_dit('hooks'))
 
-    print(2)
-    if "pythonanywhere" in str('hostname'):
+    print(2, hostname)
+    if "pythonanywhere" in str(hostname):
         git_path = find_parh_to_dit('.git', path='/home/somethingName/vk_bot_3')
         with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
             run_file_path = f"""/var/www/{hostname.replace(
