@@ -18,6 +18,8 @@ if isfile(file_name):
     if text.isdigit():
         if int(text) > count_process:
             from os import remove
+            with open(file_name, "w", encoding='utf-8') as f:
+                print(str(int(text) + 1), file=f)
             # значит это последний запущенный процесс
             # удаляем файл счетчика
 
@@ -36,14 +38,16 @@ else:
         print("1", file=f)
 
 __name__ = "sub.programm"
-with open(file_name, "r", encoding='utf-8') as f:
-    text = str(f.read()).split()[0]
-    if text != '1':
-        __name__ = "sub.programm"
-    else:
-        __name__ = "__main__"
-    print([text])
-
+if isfile(file_name):
+    with open(file_name, "r", encoding='utf-8') as f:
+        text = str(f.read()).split()[0]
+        if text != '1':
+            __name__ = "sub.programm"
+        else:
+            __name__ = "__main__"
+        print([text])
+else:
+    __name__ = "sub.programm"
 
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
@@ -52,17 +56,21 @@ def error_callback_func(*args, **kwargs):
     print(kwargs)
     print('---------------------------------')
 
-def find_parh_to_dit(target_dir_name):
+def find_parh_to_dit(target_dir_name, path=None):
     from os import getcwd
     from os.path import split as os_split, exists, join as os_join
 
-    path = getcwd()
+    path = path or getcwd()
+    old_path = ''
     while target_dir_name not in path:
         if exists(os_join(path, target_dir_name)):
             path = os_join(path, target_dir_name)
             break
         now_dir = os_split(path)[1]
         path = os_split(path)[0]
+        if old_path == path:
+            break
+        old_path = path
         print(path, now_dir)
     else:
         all_path, end_dir = os_split(path)
@@ -166,9 +174,10 @@ if __name__ == '__main__':
 
     hostname = socket.gethostname()
     # print(find_parh_to_dit('hooks'))
-    git_path = find_parh_to_dit('.git')
+
     print(2)
     if "pythonanywhere" in str('hostname'):
+        git_path = find_parh_to_dit('.git', path='/home/somethingName/vk_bot_3')
         with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
             run_file_path = f"""/var/www/{hostname.replace(
                 '.pythonanywhere.com', '').replace('https://', '').replace('http://', '').replace('.', '').replace(
