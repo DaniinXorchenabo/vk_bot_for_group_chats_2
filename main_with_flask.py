@@ -107,49 +107,13 @@ def is_valid_signature(x_hub_signature, data, private_key):
 
 
 def ended_work(chains_mps):
+    print(chains_mps)
     chains_mps['finish_listen'].put('end')
     chains_mps['send'].put(("end_work", []))
     chains_mps['listen'].put(("end_work", []))
     chains_mps['proc'][0].put(("end_work", []))
     chains_mps['db'][0].put(("db", []))
 
-
-@app.route('/', methods=['POST'])
-def flask_processing():
-    print('909090----')
-    if type(chains_mps) != list:
-        data = json.loads(request.data)
-        chains_mps['new_event_from_vk'].put(data)
-
-
-@app.route('/git_pull', methods=['POST'])
-def webhook():
-    if request.method == 'POST':
-        import os
-        from settings.config import cfg
-        from time import time
-
-        x_hub_signature = request.headers.get('X - Hub - Signature')
-        w_secret = cfg.get("git", "secret_key_git")
-        print('w_secret', w_secret)
-        if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
-            print('pulling........')
-            ended_work(chains_mps)
-            repo = git.Repo()
-            origin = repo.remotes.origin
-            if os.path.isfile(file_name):
-                os.remove(file_name)
-            start_time = time()
-            while len(finish_proc) < 4:
-                if time() - start_time > 20:
-                    break
-            print("****")
-            origin.pull()
-
-        print("it is mast be False", x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
-        return 'Updated PythonAnywhere successfully', 200
-    else:
-        return 'Wrong event type', 400
 
 # text = ''
 # with open(file_name, "r", encoding='utf-8') as f:
@@ -261,5 +225,40 @@ if __name__ == '__main__':
 else:
     print('90988888***********', __name__)
 
+@app.route('/', methods=['POST'])
+def flask_processing():
+    print('909090----')
+    if type(chains_mps) != list:
+        data = json.loads(request.data)
+        chains_mps['new_event_from_vk'].put(data)
 
+
+@app.route('/git_pull', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        import os
+        from settings.config import cfg
+        from time import time
+
+        x_hub_signature = request.headers.get('X - Hub - Signature')
+        w_secret = cfg.get("git", "secret_key_git")
+        print('w_secret', w_secret)
+        if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
+            print('pulling........')
+            ended_work(chains_mps)
+            repo = git.Repo()
+            origin = repo.remotes.origin
+            if os.path.isfile(file_name):
+                os.remove(file_name)
+            start_time = time()
+            while len(finish_proc) < 4:
+                if time() - start_time > 20:
+                    break
+            print("****")
+            origin.pull()
+
+        print("it is mast be False", x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
