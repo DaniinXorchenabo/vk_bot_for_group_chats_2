@@ -112,9 +112,10 @@ def flask_processing():
 def webhook():
     if request.method == 'POST':
         import os
+        from settings.config import cfg
 
         x_hub_signature = request.headers.get('X - Hub - Signature')
-        w_secret = os.environ.get("SECRET_KEY_FOR_UPDATE", None)
+        w_secret = cfg.get("git", "secret_key_git")
         print('w_secret', w_secret)
         if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
             print('pulling........')
