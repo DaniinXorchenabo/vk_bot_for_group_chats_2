@@ -181,15 +181,15 @@ if __name__ == '__main__':
 
 
     hostname = os.environ.get('HOST_NAME', "")
+    wsgi_module = os.environ.get('WSGI_MODULE', None)
     # print(find_parh_to_dit('hooks'))
 
-    print(2, hostname)
-    if "pythonanywhere" in str(hostname):
-        git_path = find_parh_to_dit('.git', path='/home/somethingName/vk_bot_3')
+    print(2, hostname, "pythonanywhere" in str(hostname), wsgi_module)
+    if "pythonanywhere" in str(hostname) and wsgi_module:
+        git_path = find_parh_to_dit('.git')
+        print(git_path)
         with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
-            run_file_path = f"""/var/www/{hostname.replace(
-                '.pythonanywhere.com', '').replace('https://', '').replace('http://', '').replace('.', '').replace(
-                '/', '').split(':')[0]}_pythonanywhere_com_wsgi.py"""
+            run_file_path = f"""/var/www/{wsgi_module}.py"""
             print(f"""#!/bin/sh\ntouch {run_file_path}""", file=file)
         os.system(f"chmod +x {run_file_path}")
     print(3)
