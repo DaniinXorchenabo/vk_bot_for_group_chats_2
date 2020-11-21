@@ -180,7 +180,7 @@ if __name__ == '__main__':
     import socket
 
 
-    hostname = socket.gethostname()
+    hostname = os.environ.get('HOST_NAME', "")
     # print(find_parh_to_dit('hooks'))
 
     print(2, hostname)
