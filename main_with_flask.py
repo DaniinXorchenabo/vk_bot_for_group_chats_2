@@ -134,7 +134,7 @@ def webhook():
         print('w_secret', w_secret)
         if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
             print('pulling........')
-            ended_work()
+            ended_work(chains_mps)
             repo = git.Repo()
             origin = repo.remotes.origin
             if os.path.isfile(file_name):
@@ -143,6 +143,7 @@ def webhook():
             while len(finish_proc) < 4:
                 if time() - start_time > 20:
                     break
+            print("****")
             origin.pull()
 
 
