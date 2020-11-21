@@ -152,8 +152,6 @@ if __name__ == '__main__':
         from config import cfg
 
     print(1)
-    import socket
-
 
     hostname = os.environ.get('HOST_NAME', "")
     wsgi_module = os.environ.get('WSGI_MODULE', None)
