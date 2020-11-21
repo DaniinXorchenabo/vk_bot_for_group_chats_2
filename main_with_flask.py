@@ -106,14 +106,6 @@ def is_valid_signature(x_hub_signature, data, private_key):
         return hmac.compare_digest(mac.hexdigest(), github_signature)
 
 
-
-
-
-# text = ''
-# with open(file_name, "r", encoding='utf-8') as f:
-#     text += f.read().split()[0]
-
-
 if __name__ == '__main__':
     print('^^^^^^^^^')
     import os
