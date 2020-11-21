@@ -121,9 +121,10 @@ def webhook():
             print('pulling........')
             repo = git.Repo('path/to/git_repo')
             origin = repo.remotes.origin
-            origin.pull()
             if os.path.isfile(file_name):
                 os.remove(file_name)
+            origin.pull()
+
         print("it is mast be False", x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
         return 'Updated PythonAnywhere successfully', 200
     else:
