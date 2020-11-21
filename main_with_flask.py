@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-count_process = 4
+count_process = 5
 from os.path import isfile
 from os import getcwd
 
@@ -7,7 +7,7 @@ from flask import Flask, request, json
 import git
 
 app = Flask(__name__)
-
+finish_proc = []
 print("Мой путь сейчас:", getcwd())
 file_name = "counter"
 if isfile(file_name):
@@ -50,11 +50,20 @@ if isfile(file_name):
 else:
     __name__ = "sub.programm"
 
+def callback_func(*args, **kwargs):
+    print('---------------------------------')
+    print('callback_func', )
+    print(args)
+    print(kwargs)
+    finish_proc.append(args[0])
+    print('---------------------------------')
+
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
     print('error_callback_func', )
     print(args)
     print(kwargs)
+    finish_proc.append(1)
     print('---------------------------------')
 
 def find_parh_to_dit(target_dir_name, path=None):
@@ -97,7 +106,12 @@ def is_valid_signature(x_hub_signature, data, private_key):
         return hmac.compare_digest(mac.hexdigest(), github_signature)
 
 
-
+def ended_work(chains_mps):
+    chains_mps['finish_listen'].put('end')
+    chains_mps['send'].put(("end_work", []))
+    chains_mps['listen'].put(("end_work", []))
+    chains_mps['proc'][0].put(("end_work", []))
+    chains_mps['db'][0].put(("db", []))
 
 
 @app.route('/', methods=['POST'])
@@ -113,16 +127,22 @@ def webhook():
     if request.method == 'POST':
         import os
         from settings.config import cfg
+        from time import time
 
         x_hub_signature = request.headers.get('X - Hub - Signature')
         w_secret = cfg.get("git", "secret_key_git")
         print('w_secret', w_secret)
         if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
             print('pulling........')
+            ended_work()
             repo = git.Repo()
             origin = repo.remotes.origin
             if os.path.isfile(file_name):
                 os.remove(file_name)
+            start_time = time()
+            while len(finish_proc) < 4:
+                if time() - start_time > 20:
+                    break
             origin.pull()
 
 
@@ -134,13 +154,15 @@ def webhook():
 # text = ''
 # with open(file_name, "r", encoding='utf-8') as f:
 #     text += f.read().split()[0]
+
+
 if __name__ == '__main__':
     print('^^^^^^^^^')
     import os
 
     print("переменные окружения", os.environ)
-    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
-    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk"]
+    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work"]
+    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen"]
 
     # import importlib
     # import nltk.collections
@@ -227,12 +249,17 @@ if __name__ == '__main__':
     print(6)
     # =======! Start working !=======
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps, 'types': types},
-                          error_callback=error_callback_func) for i in [VkListen, VkSending]]
+                          error_callback=error_callback_func, callback=callback_func) for i in [VkListen, VkSending]]
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
-                               error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
+                               error_callback=error_callback_func, callback=callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
     print(7)
-    # while True:
-    #     sleep(1)
+    sleep(20)
+    ended_work(chains_mps)
+    while True:
+        sleep(1)
 else:
     print('90988888***********', __name__)
+
+
+

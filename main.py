@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
 
     # =======! initialization !=======
-    pool = Pool(processes=2)
+    pool = Pool(processes=4)
     # очередь = [(type: str, content: typle), ...]
     #   type='func':    очередь = [('func', (func, args: list, kwargs: dict)), ...]
     #   type='ev':   очередь = [('ev', (type_ev:str, data:dict, func, args, kwargs)), ...] (ev - событие)
@@ -52,15 +52,17 @@ if __name__ == '__main__':
     #   type='cooking_msg'      = [('cooking_msg', msg: dict), ...]
     #   type='change_param'      = [('change_param', (peer_id, text, data: dict)), ...] data - словарь с обновленными параметрами
     #   type='inner_info'        = [('inner_info', (type, data)), ...]
+    #   type='end_work'          = [("end_work", []), ...]
     #       proc - для отправки в класс обработки сообщений
     #       db - для отправки в класс базы данных
     #       type_ev = [new_msg - новое сообщение]
 
-    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
-    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk"]
+    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work"]
+    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen"]
     chains_mps = {(i if type(i) != dict else list(i.keys())[0]): (
         Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])
         for i in chains_mps}
+
     users_data = ['admins', 'developers']
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
     users_data = {i: Manager().dict() for i in users_data}
@@ -75,5 +77,8 @@ if __name__ == '__main__':
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
                                error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
+    sleep(20)
+    chains_mps['finish_listen'].put('end')
+    print('----')
     while True:
         sleep(1)

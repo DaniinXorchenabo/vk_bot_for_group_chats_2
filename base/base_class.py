@@ -36,7 +36,7 @@ class BaseClass:
             cls.gen_proc_func_from_types(types)
             cls.run = True
             print('child_start starting in', cls.__name__)
-            while True:
+            while cls.run:
                 try:
                     cls.child_start(*ar_cl, queues=queues, **kw_cl)
                 except Exception as e:
@@ -45,6 +45,7 @@ class BaseClass:
         except Exception as e:
             print('произошла ошибка в', cls.__name__ + ':', e)
         cls.run = False
+        print(cls.__name__, "Завершил работу")
         return cls.start
 
     @classmethod
@@ -80,6 +81,8 @@ class BaseClass:
 
     @classmethod
     def q_data_proc(cls, _type, content, *ar_cl, queues=dict(), **kw_cl):
+        if _type == "end_work":
+            cls.run = False
         # print(hasattr(cls, _type + '_type_proc'))
         if hasattr(cls, _type + '_type_proc'):
             # print(getattr(cls, _type + '_type_proc'), [*content])
