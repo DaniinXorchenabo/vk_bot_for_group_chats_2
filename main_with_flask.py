@@ -224,6 +224,7 @@ if __name__ == '__main__':
     #     sleep(1)
 else:
     print('90988888***********', __name__)
+    del app
 
 
 @app.route('/', methods=['POST'])
