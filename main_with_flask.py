@@ -19,6 +19,7 @@ if isfile(file_name):
     if text.isdigit():
         if int(text) > count_process:
             from os import remove
+
             with open(file_name, "w", encoding='utf-8') as f:
                 print(str(int(text) + 1), file=f)
             # значит это последний запущенный процесс
@@ -50,6 +51,7 @@ if isfile(file_name):
 else:
     __name__ = "sub.programm"
 
+
 def callback_func(*args, **kwargs):
     print('---------------------------------')
     print('callback_func', )
@@ -58,6 +60,7 @@ def callback_func(*args, **kwargs):
     finish_proc.append(args[0])
     print('---------------------------------')
 
+
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
     print('error_callback_func', )
@@ -65,6 +68,7 @@ def error_callback_func(*args, **kwargs):
     print(kwargs)
     finish_proc.append(1)
     print('---------------------------------')
+
 
 def find_parh_to_dit(target_dir_name, path=None):
     from os import getcwd
@@ -88,7 +92,6 @@ def find_parh_to_dit(target_dir_name, path=None):
             now_dir = path[1]
             path = os_split(path[0])[0] if not bool(path[-1]) else path[0]
     return path
-
 
 
 def is_valid_signature(x_hub_signature, data, private_key):
@@ -159,6 +162,7 @@ if __name__ == '__main__':
         os.system(f"chmod +x {run_file_path}")
     print(3)
     from multiprocessing import Pool, cpu_count, Manager
+
     print(3.5)
     # =======! initialization !=======
     pool = Pool(processes=count_process)
@@ -177,7 +181,7 @@ if __name__ == '__main__':
     print(4)
     chains_mps = {(i if type(i) != dict else list(i.keys())[0]): [print(i), (
         Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])][1]
-        for i in chains_mps}
+                  for i in chains_mps}
     print(4.5)
     users_data = ['admins', 'developers']
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
@@ -191,13 +195,25 @@ if __name__ == '__main__':
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps, 'types': types},
                           error_callback=error_callback_func, callback=callback_func) for i in [VkListen, VkSending]]
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
-                               error_callback=error_callback_func, callback=callback_func) for i in [ProcessingMsg, ControlDB]])
+                               error_callback=error_callback_func, callback=callback_func) for i in
+              [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
     print(7)
 
 
-    def ended_work(chains_mps):
-        print(chains_mps)
+    # sleep(20)
+    # ended_work(chains_mps)
+    # while True:
+    #     sleep(1)
+else:
+    print('90988888***********', __name__)
+    chains_mps = None
+    app = None
+
+
+def ended_work(chains_mps):
+    print(chains_mps)
+    if chains_mps:
         chains_mps['finish_listen'].put('end')
         chains_mps['send'].put(("end_work", []))
         chains_mps['listen'].put(("end_work", []))
@@ -205,52 +221,45 @@ if __name__ == '__main__':
         chains_mps['db'][0].put(("db", []))
 
 
-    @app.route('/', methods=['POST'])
-    def flask_processing():
-        print('909090----')
-        if type(chains_mps) != list:
-            data = json.loads(request.data)
-            chains_mps['new_event_from_vk'].put(data)
+@app.route('/', methods=['POST'])
+def flask_processing():
+    print('909090----')
+    # if type(chains_mps) != list:
+    # data = json.loads(request.data)
+    # chains_mps['new_event_from_vk'].put(data)
 
 
-    @app.route('/git_pull', methods=['POST'])
-    def webhook():
-        if request.method == 'POST':
-            import os
-            from settings.config import cfg
-            from time import time
+@app.route('/git_pull', methods=['POST'])
+def webhook():
+    if request.method == 'POST' and webhook.chains_mps_loc:
+        import os
+        from settings.config import cfg
+        from time import time
 
-            x_hub_signature = request.headers.get('X - Hub - Signature')
-            w_secret = cfg.get("git", "secret_key_git")
-            print('w_secret', w_secret)
-            if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
-                print('pulling........')
-                ended_work(webhook.chains_mps_loc)
-                repo = git.Repo()
-                origin = repo.remotes.origin
-                if os.path.isfile(file_name):
-                    os.remove(file_name)
-                start_time = time()
-                while len(finish_proc) < 4:
-                    if time() - start_time > 20:
-                        break
-                print("****")
-                origin.pull()
+        x_hub_signature = request.headers.get('X - Hub - Signature')
+        w_secret = cfg.get("git", "secret_key_git")
+        print('w_secret', w_secret)
+        if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
+            print('pulling........')
+            ended_work(webhook.chains_mps_loc)
+            repo = git.Repo()
+            origin = repo.remotes.origin
+            if os.path.isfile(file_name):
+                os.remove(file_name)
+            start_time = time()
+            while len(finish_proc) < 4:
+                if time() - start_time > 20:
+                    break
+            print("****")
+            origin.pull()
 
-            print("it is mast be False",
-                  x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
-            return 'Updated PythonAnywhere successfully', 200
-        else:
-            return 'Wrong event type', 400
+        print("it is mast be False",
+              x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
 
-    setattr(webhook, "chains_mps_loc", chains_mps)
-    # sleep(20)
-    # ended_work(chains_mps)
-    # while True:
-    #     sleep(1)
-else:
-    print('90988888***********', __name__)
-    del app
+setattr(webhook, "chains_mps_loc", chains_mps)
 
-
-
+if __name__ != '__main__':
+    app = None
