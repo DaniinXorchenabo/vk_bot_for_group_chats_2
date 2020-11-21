@@ -119,7 +119,7 @@ def webhook():
         print('w_secret', w_secret)
         if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
             print('pulling........')
-            repo = git.Repo('path/to/git_repo')
+            repo = git.Repo()
             origin = repo.remotes.origin
             if os.path.isfile(file_name):
                 os.remove(file_name)
