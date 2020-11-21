@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-count_process = 5
+count_process = 4
 from os.path import isfile
 from os import getcwd
 
