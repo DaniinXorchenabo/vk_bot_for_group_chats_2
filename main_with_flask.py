@@ -121,6 +121,8 @@ def webhook():
             repo = git.Repo('path/to/git_repo')
             origin = repo.remotes.origin
             origin.pull()
+            if os.path.isfile(file_name):
+                os.remove(file_name)
         print("it is mast be False", x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
         return 'Updated PythonAnywhere successfully', 200
     else:
@@ -133,6 +135,7 @@ if __name__ == '__main__':
     print('^^^^^^^^^')
     import os
 
+    print("переменные окружения", os.environ)
     types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff']
     chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk"]
 
