@@ -146,7 +146,6 @@ def webhook():
             print("****")
             origin.pull()
 
-
         print("it is mast be False", x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
         return 'Updated PythonAnywhere successfully', 200
     else:
