@@ -36,7 +36,12 @@ class BaseClass:
             cls.gen_proc_func_from_types(types)
             cls.run = True
             print('child_start starting in', cls.__name__)
-            cls.child_start(*ar_cl, queues=queues, **kw_cl)
+            while True:
+                try:
+                    cls.child_start(*ar_cl, queues=queues, **kw_cl)
+                except Exception as e:
+                    print('произошла ошибка в', cls.__name__ + ':', e)
+                    print('работаем дальше')
         except Exception as e:
             print('произошла ошибка в', cls.__name__ + ':', e)
         cls.run = False
