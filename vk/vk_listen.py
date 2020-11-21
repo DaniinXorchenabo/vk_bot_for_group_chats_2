@@ -114,7 +114,7 @@ def changed_listen(self, end_queue):
             print(114)
             if event == 'end':
                 return
-        print('----|||||||||||||||')
+        # print('----|||||||||||||||')
 
 
 

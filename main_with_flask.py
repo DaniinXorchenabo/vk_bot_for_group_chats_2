@@ -106,13 +106,7 @@ def is_valid_signature(x_hub_signature, data, private_key):
         return hmac.compare_digest(mac.hexdigest(), github_signature)
 
 
-def ended_work(chains_mps):
-    print(chains_mps)
-    chains_mps['finish_listen'].put('end')
-    chains_mps['send'].put(("end_work", []))
-    chains_mps['listen'].put(("end_work", []))
-    chains_mps['proc'][0].put(("end_work", []))
-    chains_mps['db'][0].put(("db", []))
+
 
 
 # text = ''
@@ -225,6 +219,15 @@ if __name__ == '__main__':
 else:
     print('90988888***********', __name__)
     del app
+
+
+def ended_work(chains_mps):
+    print(chains_mps)
+    chains_mps['finish_listen'].put('end')
+    chains_mps['send'].put(("end_work", []))
+    chains_mps['listen'].put(("end_work", []))
+    chains_mps['proc'][0].put(("end_work", []))
+    chains_mps['db'][0].put(("db", []))
 
 
 @app.route('/', methods=['POST'])
