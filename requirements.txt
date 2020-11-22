@@ -5,3 +5,4 @@ pony
 vk-api
 flask
 GitPython
+psutil
