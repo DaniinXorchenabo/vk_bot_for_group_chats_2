@@ -274,7 +274,6 @@ try:
         else:
             return 'Wrong event type', 400
 
-
     setattr(webhook, "chains_mps_loc", chains_mps)
 
 except Exception as e:
