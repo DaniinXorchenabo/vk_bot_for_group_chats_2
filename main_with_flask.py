@@ -263,3 +263,6 @@ setattr(webhook, "chains_mps_loc", chains_mps)
 
 if __name__ != '__main__':
     app = None
+
+
+print('----------------------------------------------', app)
