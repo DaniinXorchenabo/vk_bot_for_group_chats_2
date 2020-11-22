@@ -112,8 +112,9 @@ if __name__ == '__main__':
     print('^^^^^^^^^')
     import os
     import subprocess
-
+    print('---')
     pid = str(os.getpid())
+    print('----****')
     returned_output = subprocess.check_output(["tasklist"], ).decode('utf-8', errors='ignore')
     print(returned_output)
     returned_output = [os.system(f"Taskkill /PID {i[1]} /F") for i in filter(
@@ -290,6 +291,6 @@ except Exception as e:
 
 if __name__ != '__main__':
     app = None
-if app:
-    app.run()
+# if app:
+#     app.run()
 print('----------------------------------------------', app)
