@@ -223,58 +223,63 @@ def ended_work(chains_mps):
         chains_mps['db'][0].put(("db", []))
         print('funish ended_work')
 
-
-app = Flask(__name__)
-
-
-@app.route('/', methods=['POST'])
-def flask_processing():
-    print('909090----')
-    # if type(chains_mps) != list:
-    # data = json.loads(request.data)
-    # chains_mps['new_event_from_vk'].put(data)
+try:
+    app = Flask(__name__)
 
 
-@app.route('/git_pull', methods=['POST'])
-def webhook():
-    try:
-        import psutil
-        # print(*(p.name() for p in psutil.process_iter()))
-    except Exception as e:
-        print("Не получилось получить список процессов", e)
-    if request.method == 'POST' and webhook.chains_mps_loc:
-        import os
-        from settings.config import cfg
-        from time import time
 
-        x_hub_signature = request.headers.get('X - Hub - Signature')
-        w_secret = cfg.get("git", "secret_key_git")
-        print('w_secret', w_secret)
-        if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
-            print('pulling........')
-            ended_work(webhook.chains_mps_loc)
-            repo = git.Repo()
-            origin = repo.remotes.origin
-            if os.path.isfile(file_name):
-                os.remove(file_name)
-            start_time = time()
-            finish_proc_1 = []
-            while len(finish_proc_1) < 4:
-                if not webhook.chains_mps_loc['end_work_for_main'].empty():
-                    finish_proc_1.append(webhook.chains_mps_loc['end_work_for_main'].get())
-                if time() - start_time > 70:
-                    break
-            print("****", finish_proc_1)
-            origin.pull()
-
-            sys.exit()
-
-        return 'Updated PythonAnywhere successfully', 200
-    else:
-        return 'Wrong event type', 400
+    @app.route('/', methods=['POST'])
+    def flask_processing():
+        print('909090----')
+        # if type(chains_mps) != list:
+        # data = json.loads(request.data)
+        # chains_mps['new_event_from_vk'].put(data)
 
 
-setattr(webhook, "chains_mps_loc", chains_mps)
+    @app.route('/git_pull', methods=['POST'])
+    def webhook():
+        try:
+            import psutil
+            # print(*(p.name() for p in psutil.process_iter()))
+        except Exception as e:
+            print("Не получилось получить список процессов", e)
+        if request.method == 'POST' and webhook.chains_mps_loc:
+            import os
+            from settings.config import cfg
+            from time import time
+
+            x_hub_signature = request.headers.get('X - Hub - Signature')
+            w_secret = cfg.get("git", "secret_key_git")
+            print('w_secret', w_secret)
+            if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
+                print('pulling........')
+                ended_work(webhook.chains_mps_loc)
+                repo = git.Repo()
+                origin = repo.remotes.origin
+                if os.path.isfile(file_name):
+                    os.remove(file_name)
+                start_time = time()
+                finish_proc_1 = []
+                while len(finish_proc_1) < 4:
+                    if not webhook.chains_mps_loc['end_work_for_main'].empty():
+                        finish_proc_1.append(webhook.chains_mps_loc['end_work_for_main'].get())
+                    if time() - start_time > 70:
+                        break
+                print("****", finish_proc_1)
+                origin.pull()
+
+                sys.exit()
+
+            return 'Updated PythonAnywhere successfully', 200
+        else:
+            return 'Wrong event type', 400
+
+
+    setattr(webhook, "chains_mps_loc", chains_mps)
+
+except Exception as e:
+    print("не получилось создать app = Flask(__name__)", e)
+    app = None
 
 if __name__ != '__main__':
     app = None
