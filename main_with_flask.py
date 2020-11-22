@@ -6,7 +6,6 @@ from os import getcwd
 from flask import Flask, request, json
 import git
 
-
 finish_proc = []
 print("Мой путь сейчас:", getcwd())
 file_name = "counter"
@@ -115,7 +114,8 @@ if __name__ == '__main__':
 
     print("переменные окружения", os.environ)
     types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work"]
-    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen", "end_work_for_main"]
+    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen",
+                  "end_work_for_main"]
 
     try:
         from base.base_libs import *
@@ -223,7 +223,9 @@ def ended_work(chains_mps):
         chains_mps['db'][0].put(("db", []))
         print('funish ended_work')
 
+
 app = Flask(__name__)
+
 
 @app.route('/', methods=['POST'])
 def flask_processing():
@@ -244,7 +246,6 @@ def webhook():
         import os
         from settings.config import cfg
         from time import time
-
 
         x_hub_signature = request.headers.get('X - Hub - Signature')
         w_secret = cfg.get("git", "secret_key_git")
@@ -272,10 +273,10 @@ def webhook():
     else:
         return 'Wrong event type', 400
 
+
 setattr(webhook, "chains_mps_loc", chains_mps)
 
 if __name__ != '__main__':
     app = None
-
 
 print('----------------------------------------------', app)
