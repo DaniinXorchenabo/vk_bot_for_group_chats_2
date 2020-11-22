@@ -114,8 +114,8 @@ if __name__ == '__main__':
     import os
 
     print("переменные окружения", os.environ)
-    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work", "end_work_for_main"]
-    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen"]
+    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work"]
+    chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen", "end_work_for_main"]
 
     try:
         from base.base_libs import *
