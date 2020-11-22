@@ -106,12 +106,21 @@ def changed_listen(self, end_queue):
     while live:
         # print('111')
         if not end_queue.empty():
-            end_iter = chain(['end'], end_iter)
-            print(112)
+            print('111')
+            element = end_queue.get()
+            print('112')
+            if element == 'end':
+                print('113')
+                yield element
+                print('114')
+                return
+            print(115)
+            end_iter = chain(element, end_iter)
+            print(116)
         for event in chain(end_iter, self.check()):
-            print(113)
+            # print(117)
             yield event
-            print(114)
+            # print(118)
             if event == 'end':
                 return
         # print('----|||||||||||||||')

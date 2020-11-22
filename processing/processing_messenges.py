@@ -22,7 +22,8 @@ class ProcessingMsg(BaseClass):
             if q_or_none:
                 # print('from ProcessingMsg.working', q_or_none)
                 cls.q_data_proc(*q_or_none, queues=queues)  # -> cls.event_type_proc() or content_type_proc()
-            sleep(0.1)
+            else:
+                sleep(0.1)
 
     # =======! Processing !=======
     @classmethod

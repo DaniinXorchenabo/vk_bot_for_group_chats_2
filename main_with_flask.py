@@ -220,7 +220,7 @@ def ended_work(chains_mps):
         chains_mps['send'].put(("end_work", []))
         chains_mps['listen'].put(("end_work", []))
         chains_mps['proc'][0].put(("end_work", []))
-        chains_mps['db'][0].put(("db", []))
+        chains_mps['db'][0].put(("end_work", []))
         print('finish ended_work')
 
 try:
@@ -238,11 +238,6 @@ try:
 
     @app.route('/git_pull', methods=['POST'])
     def webhook():
-        try:
-            import psutil
-            # print(*(p.name() for p in psutil.process_iter()))
-        except Exception as e:
-            print("Не получилось получить список процессов", e)
         if request.method == 'POST' and chains_mps:
             import os
             from settings.config import cfg
@@ -250,7 +245,7 @@ try:
 
             x_hub_signature = request.headers.get('X - Hub - Signature')
             w_secret = cfg.get("git", "secret_key_git")
-            print('w_secret', w_secret)
+            # print('w_secret', w_secret)
             if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
                 print('pulling........')
                 ended_work(chains_mps)
@@ -267,9 +262,7 @@ try:
                         break
                 print("****", finish_proc_1)
                 origin.pull()
-
                 sys.exit()
-
             return 'Updated PythonAnywhere successfully', 200
         else:
             return 'Wrong event type', 400
@@ -282,5 +275,6 @@ except Exception as e:
 
 if __name__ != '__main__':
     app = None
-
+if app:
+    app.run()
 print('----------------------------------------------', app)

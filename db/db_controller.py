@@ -29,7 +29,7 @@ class ControlDB(BaseClass):
             queue = cls.get_db(queues=queues)
             # print('************', queue)
             if queue:
-                # print('from db class', queue)
+                print('from db class', queue)
                 cls.q_data_proc(*queue, queues=queues)
             else:
                 sleep(0.1)
