@@ -114,7 +114,8 @@ if __name__ == '__main__':
     import subprocess
 
     pid = str(os.getpid())
-    returned_output = subprocess.check_output(["tasklist"], shell=True, ).decode('utf-8', errors='ignore')
+    returned_output = subprocess.check_output(["tasklist"], ).decode('utf-8', errors='ignore')
+    print(returned_output)
     returned_output = [os.system(f"Taskkill /PID {i[1]} /F") for i in filter(
         lambda i: len(i) == 2 and i[0] == 'python.exe' and str(i[1]) != str(pid),
         [i.strip().split()[:2] for i in returned_output.split('\n')])]
