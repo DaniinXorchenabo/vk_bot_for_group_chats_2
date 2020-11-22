@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 finish_proc = []
+
+
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
     print('error_callback_func', )
@@ -9,6 +11,7 @@ def error_callback_func(*args, **kwargs):
     # finish_proc.append(args[0])
     print('---------------------------------')
 
+
 def callback_func(*args, **kwargs):
     print('---------------------------------')
     print('callback_func', )
@@ -16,6 +19,7 @@ def callback_func(*args, **kwargs):
     print(kwargs)
     finish_proc.append(args[0])
     print('---------------------------------')
+
 
 if __name__ == '__main__':
     # import importlib
@@ -50,7 +54,6 @@ if __name__ == '__main__':
         from vk_sending import VkSending
     from multiprocessing import Pool, cpu_count, Manager
 
-
     # =======! initialization !=======
     pool = Pool(processes=4)
     # очередь = [(type: str, content: typle), ...]
@@ -76,7 +79,6 @@ if __name__ == '__main__':
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
     users_data = {i: Manager().dict() for i in users_data}
 
-
     # =======! Создание общих частей для классов-родителей !=======
     BaseClass.common_start(queues=chains_mps, types=types)
     VkBase.common_start()
@@ -84,7 +86,8 @@ if __name__ == '__main__':
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps, 'types': types},
                           error_callback=error_callback_func, callback=callback_func) for i in [VkListen, VkSending]]
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
-                               error_callback=error_callback_func, callback=callback_func) for i in [ProcessingMsg, ControlDB]])
+                               error_callback=error_callback_func, callback=callback_func) for i in
+              [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
     sleep(20)
     chains_mps['finish_listen'].put('end')
