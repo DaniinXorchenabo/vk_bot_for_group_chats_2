@@ -6,7 +6,7 @@ from os import getcwd
 from flask import Flask, request, json
 import git
 
-app = Flask(__name__)
+
 finish_proc = []
 print("Мой путь сейчас:", getcwd())
 file_name = "counter"
@@ -179,17 +179,20 @@ if __name__ == '__main__':
     #       type_ev = [new_msg - новое сообщение]
 
     print(4)
-    chains_mps = {(i if type(i) != dict else list(i.keys())[0]): [print(i), (
-        Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])][1]
-                  for i in chains_mps}
+    # chains_mps = {(i if type(i) != dict else list(i.keys())[0]): [print(i), (
+    #     Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])][1]
+    #               for i in chains_mps}
     print(4.5)
     users_data = ['admins', 'developers']
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
-    users_data = {i: Manager().dict() for i in users_data}
+    # users_data = {i: Manager().dict() for i in users_data}
     print(5)
     # =======! Создание общих частей для классов-родителей !=======
-    BaseClass.common_start(queues=chains_mps, types=types)
-    VkBase.common_start()
+    try:
+        BaseClass.common_start(queues=chains_mps, types=types)
+        VkBase.common_start()
+    except Exception:
+        pass
     print(6)
     # =======! Start working !=======
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps, 'types': types},
@@ -208,7 +211,7 @@ if __name__ == '__main__':
 else:
     print('90988888***********', __name__)
     chains_mps = None
-    app = None
+    # app = None
 
 
 def ended_work(chains_mps):
@@ -220,6 +223,7 @@ def ended_work(chains_mps):
         chains_mps['proc'][0].put(("end_work", []))
         chains_mps['db'][0].put(("db", []))
 
+app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def flask_processing():
