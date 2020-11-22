@@ -179,13 +179,13 @@ if __name__ == '__main__':
     #       type_ev = [new_msg - новое сообщение]
 
     print(4)
-    # chains_mps = {(i if type(i) != dict else list(i.keys())[0]): [print(i), (
-    #     Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])][1]
-    #               for i in chains_mps}
+    chains_mps = {(i if type(i) != dict else list(i.keys())[0]): [print(i), (
+        Manager().Queue() if type(i) != dict else [Manager().Queue() for _ in range(list(i.values())[0])])][1]
+                  for i in chains_mps}
     print(4.5)
     users_data = ['admins', 'developers']
     # users_data= {admins: {admin_id: session: bool, ...}, developers: {dev_id: bool, ...}, ...}
-    # users_data = {i: Manager().dict() for i in users_data}
+    users_data = {i: Manager().dict() for i in users_data}
     print(5)
     # =======! Создание общих частей для классов-родителей !=======
     try:
