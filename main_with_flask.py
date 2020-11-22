@@ -243,7 +243,7 @@ try:
             # print(*(p.name() for p in psutil.process_iter()))
         except Exception as e:
             print("Не получилось получить список процессов", e)
-        if request.method == 'POST' and webhook.chains_mps_loc:
+        if request.method == 'POST' and chains_mps:
             import os
             from settings.config import cfg
             from time import time
@@ -253,7 +253,7 @@ try:
             print('w_secret', w_secret)
             if w_secret and not is_valid_signature(x_hub_signature, request.data, w_secret):
                 print('pulling........')
-                ended_work(webhook.chains_mps_loc)
+                ended_work(chains_mps)
                 repo = git.Repo()
                 origin = repo.remotes.origin
                 if os.path.isfile(file_name):
@@ -261,8 +261,8 @@ try:
                 start_time = time()
                 finish_proc_1 = []
                 while len(finish_proc_1) < 4:
-                    if not webhook.chains_mps_loc['end_work_for_main'].empty():
-                        finish_proc_1.append(webhook.chains_mps_loc['end_work_for_main'].get())
+                    if not chains_mps['end_work_for_main'].empty():
+                        finish_proc_1.append(chains_mps['end_work_for_main'].get())
                     if time() - start_time > 70:
                         break
                 print("****", finish_proc_1)
@@ -274,7 +274,7 @@ try:
         else:
             return 'Wrong event type', 400
 
-    setattr(webhook, "chains_mps_loc", chains_mps)
+    # setattr(webhook, "chains_mps_loc", chains_mps)
 
 except Exception as e:
     print("не получилось создать app = Flask(__name__)", e)
