@@ -203,7 +203,6 @@ if __name__ == '__main__':
     [i.ready() for i in r]
     print(7)
 
-
     # sleep(20)
     # ended_work(chains_mps)
     # while True:
