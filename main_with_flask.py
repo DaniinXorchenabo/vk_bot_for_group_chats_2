@@ -165,7 +165,14 @@ if __name__ == '__main__':
         print(git_path)
         with open(os.path.join(git_path, "hooks", "post-merge.sample"), "w", encoding="utf-8") as file:
             run_file_path = f"""/var/www/{wsgi_module}.py"""
-            print(f"""#!/bin/sh\nkillall uwsgi\ntouch {run_file_path}""", file=file)
+            print(f"""
+#!/bin/sh\n
+killall uwsgi\n
+if [[ -f {os.path.join(getcwd(), file_name)} ]]
+then
+rm {os.path.join(getcwd(), file_name)}
+fi
+touch {run_file_path}""", file=file)
         os.system(f"chmod +x {run_file_path}")
     print(3)
     from multiprocessing import Pool, cpu_count, Manager
