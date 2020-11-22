@@ -114,7 +114,7 @@ if __name__ == '__main__':
     import os
 
     print("переменные окружения", os.environ)
-    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work"]
+    types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', 'fff', "end_work", "end_work_for_main"]
     chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen"]
 
     try:
@@ -257,10 +257,13 @@ def webhook():
             if os.path.isfile(file_name):
                 os.remove(file_name)
             start_time = time()
-            while len(finish_proc) < 4:
+            finish_proc_1 = []
+            while len(finish_proc_1) < 4:
+                if not webhook.chains_mps_loc['end_work_for_main'].empty():
+                    finish_proc_1.append(webhook.chains_mps_loc['end_work_for_main'].get())
                 if time() - start_time > 70:
                     break
-            print("****", finish_proc)
+            print("****", finish_proc_1)
             origin.pull()
 
             sys.exit()

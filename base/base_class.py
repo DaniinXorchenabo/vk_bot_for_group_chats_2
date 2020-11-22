@@ -46,7 +46,7 @@ class BaseClass:
             print('произошла ошибка в', cls.__name__ + ':', e)
         cls.run = False
         print(cls.__name__, "Завершил работу")
-        finish_proc.append(cls.__name__)
+        queues['end_work_for_main'].put(cls.__name__)
 
         from sys import exit
         # exit(1)
