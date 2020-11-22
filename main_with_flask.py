@@ -221,7 +221,7 @@ def ended_work(chains_mps):
         chains_mps['listen'].put(("end_work", []))
         chains_mps['proc'][0].put(("end_work", []))
         chains_mps['db'][0].put(("db", []))
-        print('funish ended_work')
+        print('finish ended_work')
 
 try:
     app = Flask(__name__)
