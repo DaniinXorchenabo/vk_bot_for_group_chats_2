@@ -104,7 +104,7 @@ def changed_listen(self, end_queue):
     live = True
     end_iter = iter([])
     while live:
-        print('111')
+        # print('111')
         if not end_queue.empty():
             end_iter = chain(['end'], end_iter)
             print(112)
