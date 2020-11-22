@@ -158,7 +158,7 @@ if __name__ == '__main__':
         print(git_path)
         with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
             run_file_path = f"""/var/www/{wsgi_module}.py"""
-            print(f"""#!/bin/sh\ntouch {run_file_path}""", file=file)
+            print(f"""#!/bin/sh\nkillall uwsgi\ntouch {run_file_path}""", file=file)
         os.system(f"chmod +x {run_file_path}")
     print(3)
     from multiprocessing import Pool, cpu_count, Manager
@@ -222,6 +222,7 @@ def ended_work(chains_mps):
         chains_mps['listen'].put(("end_work", []))
         chains_mps['proc'][0].put(("end_work", []))
         chains_mps['db'][0].put(("db", []))
+        print('funish ended_work')
 
 app = Flask(__name__)
 
@@ -235,10 +236,16 @@ def flask_processing():
 
 @app.route('/git_pull', methods=['POST'])
 def webhook():
+    try:
+        import psutil
+        print(*(p.name() for p in psutil.process_iter()))
+    except Exception as e:
+        print("Не получилось получить список процессов", e)
     if request.method == 'POST' and webhook.chains_mps_loc:
         import os
         from settings.config import cfg
         from time import time
+
 
         x_hub_signature = request.headers.get('X - Hub - Signature')
         w_secret = cfg.get("git", "secret_key_git")
@@ -252,13 +259,11 @@ def webhook():
                 os.remove(file_name)
             start_time = time()
             while len(finish_proc) < 4:
-                if time() - start_time > 20:
+                if time() - start_time > 70:
                     break
-            print("****")
+            print("****", finish_proc)
             origin.pull()
 
-        print("it is mast be False",
-              x_hub_signature is not None or is_valid_signature(x_hub_signature, request.data, w_secret))
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
