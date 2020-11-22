@@ -156,7 +156,7 @@ if __name__ == '__main__':
     if "pythonanywhere" in str(hostname) and wsgi_module:
         git_path = find_parh_to_dit('.git')
         print(git_path)
-        with open(os.path.join(git_path, "hooks", "post-merge"), "w", encoding="utf-8") as file:
+        with open(os.path.join(git_path, "hooks", "post-merge.sample"), "w", encoding="utf-8") as file:
             run_file_path = f"""/var/www/{wsgi_module}.py"""
             print(f"""#!/bin/sh\nkillall uwsgi\ntouch {run_file_path}""", file=file)
         os.system(f"chmod +x {run_file_path}")
@@ -237,7 +237,7 @@ def flask_processing():
 def webhook():
     try:
         import psutil
-        print(*(p.name() for p in psutil.process_iter()))
+        # print(*(p.name() for p in psutil.process_iter()))
     except Exception as e:
         print("Не получилось получить список процессов", e)
     if request.method == 'POST' and webhook.chains_mps_loc:
@@ -262,6 +262,8 @@ def webhook():
                     break
             print("****", finish_proc)
             origin.pull()
+
+            sys.exit()
 
         return 'Updated PythonAnywhere successfully', 200
     else:

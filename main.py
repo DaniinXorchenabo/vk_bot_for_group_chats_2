@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 
+finish_proc = []
 def error_callback_func(*args, **kwargs):
     print('---------------------------------')
     print('error_callback_func', )
     print(args)
     print(kwargs)
+    # finish_proc.append(args[0])
     print('---------------------------------')
 
+def callback_func(*args, **kwargs):
+    print('---------------------------------')
+    print('callback_func', )
+    print(args)
+    print(kwargs)
+    finish_proc.append(args[0])
+    print('---------------------------------')
 
 if __name__ == '__main__':
     # import importlib
@@ -73,12 +82,13 @@ if __name__ == '__main__':
     VkBase.common_start()
     # =======! Start working !=======
     r = [pool.apply_async(i.start, kwds={'vip_users': users_data, 'queues': chains_mps, 'types': types},
-                          error_callback=error_callback_func) for i in [VkListen, VkSending]]
+                          error_callback=error_callback_func, callback=callback_func) for i in [VkListen, VkSending]]
     r.extend([pool.apply_async(i.start, kwds={'queues': chains_mps, 'types': types},
-                               error_callback=error_callback_func) for i in [ProcessingMsg, ControlDB]])
+                               error_callback=error_callback_func, callback=callback_func) for i in [ProcessingMsg, ControlDB]])
     [i.ready() for i in r]
-    # sleep(20)
-    # chains_mps['finish_listen'].put('end')
-    # print('----')
+    sleep(20)
+    chains_mps['finish_listen'].put('end')
+    print('----')
+
     while True:
         sleep(1)

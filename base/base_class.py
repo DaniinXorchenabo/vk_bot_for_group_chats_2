@@ -28,7 +28,7 @@ class BaseClass:
         cls.morph = cls.MorphAnalyzer()
 
     @classmethod
-    def start(cls, *ar_cl, queues=dict(), types=list(), **kw_cl):
+    def start(cls, finish_proc, *ar_cl, queues=dict(), types=list(), **kw_cl):
     # def start(cls, *ar_cl, queues=dict(), types=[], **kw_cl):
 
         try:
@@ -46,7 +46,11 @@ class BaseClass:
             print('произошла ошибка в', cls.__name__ + ':', e)
         cls.run = False
         print(cls.__name__, "Завершил работу")
-        return cls.start
+        finish_proc.append(cls.__name__)
+
+        from sys import exit
+        # exit(1)
+        return cls.__name__
 
     @classmethod
     def child_start(cls, *ar_cl, **kw_cl):
