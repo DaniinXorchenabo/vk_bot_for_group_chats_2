@@ -242,7 +242,9 @@ def ended_work(chains_mps):
 try:
     app = Flask(__name__)
 
-
+    @app.route('/test1')
+    def flask_processing():
+        return "test1 _ 1"
 
     @app.route('/', methods=['POST'])
     def flask_processing():
@@ -278,6 +280,7 @@ try:
                         break
                 print("****", finish_proc_1)
                 origin.pull()
+                print('выход.........................................................')
                 sys.exit()
             return 'Updated PythonAnywhere successfully', 200
         else:
