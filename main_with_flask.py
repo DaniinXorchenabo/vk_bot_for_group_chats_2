@@ -111,15 +111,15 @@ def is_valid_signature(x_hub_signature, data, private_key):
 if __name__ == '__main__':
     print('^^^^^^^^^')
     import os
-    import subprocess
+    # import subprocess
     print('---')
     pid = str(os.getpid())
     print('----****')
-    returned_output = subprocess.check_output(["tasklist"], ).decode('utf-8', errors='ignore')
-    print(returned_output)
-    returned_output = [os.system(f"Taskkill /PID {i[1]} /F") for i in filter(
-        lambda i: len(i) == 2 and i[0] == 'python.exe' and str(i[1]) != str(pid),
-        [i.strip().split()[:2] for i in returned_output.split('\n')])]
+    # returned_output = subprocess.check_output(["tasklist"], ).decode('utf-8', errors='ignore')
+    # print(returned_output)
+    # returned_output = [os.system(f"Taskkill /PID {i[1]} /F") for i in filter(
+    #     lambda i: len(i) == 2 and i[0] == 'python.exe' and str(i[1]) != str(pid),
+    #     [i.strip().split()[:2] for i in returned_output.split('\n')])]
 
     # print("переменные окружения", os.environ)
     types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', "end_work"]
