@@ -243,7 +243,7 @@ try:
     app = Flask(__name__)
 
     @app.route('/test1')
-    def flask_processing():
+    def flask_test():
         return "test1 _ 1"
 
     @app.route('/', methods=['POST'])
