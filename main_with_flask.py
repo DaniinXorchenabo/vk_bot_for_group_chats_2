@@ -242,6 +242,10 @@ def ended_work(chains_mps):
 try:
     app = Flask(__name__)
 
+    @app.route('/test2')
+    def flask_test2():
+        return "test1 _ 2"
+
     @app.route('/test1')
     def flask_test():
         return "test1 _ 1"
