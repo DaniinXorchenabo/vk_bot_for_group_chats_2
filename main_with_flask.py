@@ -169,11 +169,11 @@ if __name__ == '__main__':
             run_file_path = f"""/var/www/{wsgi_module}.py"""
             print(f"""
 #!/bin/sh\n
-killall uwsgi\n
 if [[ -f {os.path.join(getcwd(), file_name)} ]]
 then
 rm {os.path.join(getcwd(), file_name)}
 fi
+killall uwsgi\n
 touch {run_file_path}""", file=file)
         os.system(f"chmod +x {run_file_path}")
     print(3)
@@ -280,8 +280,8 @@ try:
                         break
                 print("****", finish_proc_1)
                 origin.pull()
-                print('выход.........................................................')
-                sys.exit()
+                print('---*****')
+                # print('выход.........................................................')
             return 'Updated PythonAnywhere successfully', 200
         else:
             return 'Wrong event type', 400

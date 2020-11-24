@@ -47,6 +47,7 @@ class BaseClass:
         queues['end_work_for_main'].put(cls.__name__)
 
         from sys import exit
+
         # exit(1)
         return cls.__name__
 
