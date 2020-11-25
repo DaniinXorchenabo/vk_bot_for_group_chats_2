@@ -48,6 +48,7 @@ def set_name_param():
 
 
 def base_main():
+    __name__ = "__main__"
     global types, chains_mps
     types = ['func', "ev", "text", 'content', 'cooking_msg', 'change_param', 'inner_info', "end_work"]
     chains_mps = ['send', 'listen', 'start', {'proc': 2}, {'db': 2}, "new_event_from_vk", "finish_listen",
@@ -85,7 +86,10 @@ def base_main():
 
     print(3.5)
     # =======! initialization !=======
-    pool = Pool(processes=COUNT_PROCESS or cpu_count())
+    try:
+        pool = Pool(processes=COUNT_PROCESS or cpu_count())
+    except Exception as e:
+        print('ошибка при создании многопроцессорности:', e)
     # очередь = [(type: str, content: typle), ...]
     #   type='func':    очередь = [('func', (func, args: list, kwargs: dict)), ...]
     #   type='ev':   очередь = [('ev', (type_ev:str, data:dict, func, args, kwargs)), ...] (ev - событие)

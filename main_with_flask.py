@@ -7,6 +7,7 @@ __name__ = set_name_param()
 print("Мой путь сейчас:", getcwd())
 print(__name__)
 if __name__ == '__main__':
+    app = None
     flask_main()
 else:
     print('90988888***********', __name__)
@@ -25,4 +26,5 @@ if __name__ != '__main__':
     app = None
 # if app:
 #     app.run()
+ee = "11"
 print('----------------------------------------------', app)
