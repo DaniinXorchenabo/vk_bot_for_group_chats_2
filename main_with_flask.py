@@ -23,6 +23,6 @@ except Exception as e:
 
 if __name__ != '__main__':
     app = None
-if app:
-    app.run()
+# if app:
+#     app.run()
 print('----------------------------------------------', app)
