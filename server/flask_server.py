@@ -16,6 +16,12 @@ def flask_test2():
 
 @app.route('/test1')
 def flask_test():
+    import os
+    import sys
+
+    print('Restarting program. Arguments {}'.format(sys.argv))
+    python = sys.executable
+    # os.execl(python, python, * sys.argv)
     return "test1 _ 1"
 
 
