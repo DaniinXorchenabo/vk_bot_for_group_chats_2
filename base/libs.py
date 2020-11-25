@@ -3,7 +3,7 @@
 from base.base_libs import *
 
 
-COUNT_PROCESS = 4
+COUNT_PROCESS = 2
 FILE_COUNTER_NAME = 'counter'
 finish_proc = []
 
