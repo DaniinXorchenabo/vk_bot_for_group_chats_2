@@ -7,10 +7,10 @@ from re import (
 )
 from random import randint
 from functools import wraps
-
+from os import getcwd, chdir, environ
+from os.path import isfile, join
 
 if __name__ == '__main__':
-    from os import getcwd, chdir
     from os.path import split as os_split
 
     path = os_split(getcwd())

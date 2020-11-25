@@ -87,6 +87,7 @@ def generate_new_msg(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
             Chat(id=id_chat)
             # flush()
         ans = 'Я не могу писать, если не знаю слов :c'
+    commit()
     print('***44434-20-34', cls, hasattr(cls, 'put_proc'))
     cls.put_proc('content', '/gen', (ans, event), pr=0, queues=queues)
     print('*______))))))))))))')
@@ -108,6 +109,7 @@ def erease_memoty(cls, comamnd, event, *args_q, queues=dict(), **kwargs_q):
     except Exception as e:
         print('произошла ошибка при очищении памяти чата', id_chat, ":", e)
         ans = 'При очищении память произошла какая-то ошибка👉🏻👈🏻😅'
+    commit()
     cls.put_send('text', ans, event, queues=queues)
 
 
