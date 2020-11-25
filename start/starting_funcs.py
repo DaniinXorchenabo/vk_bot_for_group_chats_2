@@ -44,6 +44,7 @@ def set_name_param():
             print([text])
     else:
         __name__ = "sub.programm"
+    return __name__
 
 
 def base_main():

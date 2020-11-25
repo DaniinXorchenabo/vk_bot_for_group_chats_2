@@ -3,9 +3,9 @@
 from start.starting_funcs import *
 
 
-set_name_param()
+__name__ = set_name_param()
 print("Мой путь сейчас:", getcwd())
-
+print(__name__)
 if __name__ == '__main__':
     flask_main()
 else:
