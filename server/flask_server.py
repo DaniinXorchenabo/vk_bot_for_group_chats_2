@@ -60,9 +60,17 @@ def webhook():
                     break
             print("****", finish_proc_1)
             origin.pull()
+            import sys
+            import os
             print('---*****')
-
+            changed_args = [HOME_DIR, "-start_server"] + sys.argv[1:]
+            print('Restarting program. Arguments {}'.format(changed_args))
+            python = sys.executable
+            os.execl(python, python, *changed_args)
             # print('выход.........................................................')
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
+
+if __name__ == '__main__':
+    app.run()

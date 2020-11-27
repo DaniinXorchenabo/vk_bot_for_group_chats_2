@@ -48,7 +48,7 @@ class BaseClass:
 
         from sys import exit
 
-        # exit(1)
+        exit(1)
         return cls.__name__
 
     @classmethod

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from base.base_libs import *
-
+from inspect import getsourcefile
 
 COUNT_PROCESS = 4
 FILE_COUNTER_NAME = 'counter'
@@ -104,3 +104,5 @@ def create_post_git_pull_file():
             ]
             print("\n".join(text), file=file)
         system(f"chmod +x {run_file_path}")
+
+HOME_DIR = os_split(os_split(getsourcefile(callback_func))[0])[0]
