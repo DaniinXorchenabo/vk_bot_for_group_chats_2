@@ -125,4 +125,9 @@ def base_main():
 
 def flask_main():
     create_post_git_pull_file()
-    base_main()
+    from inspect import getsource
+    code = getsource(base_main).split('\n')
+    count_tabs = code[0].split('def')[0].count(' ') + 4
+    code = "\n".join([''.join(list(i)[count_tabs :]) for i in code[1:]])
+    exec(code)
+    # base_main()

@@ -8,19 +8,21 @@
 #     print('******************')
 #     while True:
 #         sleep(1)
-with open("main_with_flask.py", 'r', encoding='utf-8') as file:
-        text = file.read()
 
-exec(text)
-try:
-    print(app)
-    app.run()
-except Exception as e:
-
-    print(e)
-
-try:
-    print(ee)
-except Exception as e:
-
-    print(e)
+# -------------------------------------------
+# with open("main_with_flask.py", 'r', encoding='utf-8') as file:
+#         text = file.read()
+#
+# exec(text)
+# try:
+#     print(app)
+#     app.run()
+# except Exception as e:
+#
+#     print(e)
+#
+# try:
+#     print(ee)
+# except Exception as e:
+#
+#     print(e)

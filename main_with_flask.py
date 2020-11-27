@@ -8,7 +8,11 @@ print("Мой путь сейчас:", getcwd())
 print(__name__)
 if __name__ == '__main__':
     app = None
-    flask_main()
+    from inspect import getsource
+    code = getsource(flask_main).split('\n')
+    count_tabs = code[0].split('def')[0].count(' ') + 4
+    code = "\n".join([''.join(list(i)[count_tabs :]) for i in code[1:]])
+    exec(code)
 else:
     print('90988888***********', __name__)
     chains_mps = None
